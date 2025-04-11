@@ -1,6 +1,10 @@
 local Entity = {}
 Entity.__index = Entity
 
+local bigP_treshold = 0.3
+local smallP_treshold = 0.1
+local currentIndexTurret = 1
+
 function Entity:create(x, y)
     local e = {}
     e.angle = 0
@@ -58,14 +62,23 @@ function Entity:addBigProjectile(projectile, dt)
     projectile.position.x = self.canon.tip.x
     projectile.position.y = self.canon.tip.y
     projectile.angle = self.angle
-    table.insert(self.bigProjectiles, projectile)
+    self.deltaB = self.deltaB + dt
+    if self.deltaB > bigP_treshold or #self.bigProjectiles == 0 then
+        table.insert(self.bigProjectiles, projectile)
+        self.deltaB = 0
+    end
 end
 
 function Entity:addSmallProjectile(projectile, dt)
-    projectile.position.x = self.turrets[1].position.x
-    projectile.position.y = self.turrets[1].position.y
-    projectile.angle = self.turrets[1].angle
-    table.insert(self.smallProjectiles, projectile)
+    self.deltaS = self.deltaS + dt
+    if self.deltaS > smallP_treshold or #self.smallProjectiles == 0 then
+        projectile.position.x = self.turrets[currentIndexTurret].position.x
+        projectile.position.y = self.turrets[currentIndexTurret].position.y
+        projectile.angle = self.turrets[currentIndexTurret].angle
+        table.insert(self.smallProjectiles, projectile)
+        self.deltaS = 0
+        currentIndexTurret = 3 - currentIndexTurret
+    end
 end
 
 function Entity:move(dt, v)
