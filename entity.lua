@@ -162,4 +162,29 @@ function Player:draw()
     self:drawProjectiles()
 end
 
-return {Player = Player}
+local Enemy = {}
+setmetatable(Enemy, {__index = Entity})
+Enemy.__index = Enemy
+
+function Enemy:create(x, y)
+    local e = Entity:create(x, y)
+    e.sprite = love.graphics.newImage("__images__/enemy.png")
+    e.origin = {x = e.sprite:getWidth() / 2, y = e.sprite:getHeight() / 2}
+    e.health = 100
+    e.delta = 0
+    e.speedMove = 50
+    e.state = {isIDLE = true, isPatroling = false, isChasing = false, isFiring = false, isFleeing = false}
+    setmetatable(e, Enemy)
+    return e
+end
+
+function Enemy:draw()
+    love.graphics.draw(self.sprite, self.position.x, self.position.y, self.angle, self.size, self.size, self.origin.x, self.origin.y)
+end
+
+function Enemy:update(player, dt)
+    self.canon.tip.x = self.position.x + math.cos(self.angle) * self.canon.length
+    self.canon.tip.y = self.position.y + math.sin(self.angle) * self.canon.length
+end
+
+return {Player = Player, Enemy = Enemy}
