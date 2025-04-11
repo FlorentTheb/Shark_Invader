@@ -1,6 +1,10 @@
 local Entity = {}
 Entity.__index = Entity
 
+local bigP_treshold = 0.3
+local smallP_treshold = 0.1
+local currentIndexTurret = 1
+
 function Entity:create(x, y)
     local e = {}
     e.angle = 0
@@ -10,12 +14,71 @@ function Entity:create(x, y)
     e.position = {x = x, y = y}
     e.angle = 0
     e.size = 1
+    e.deltaB = 0
+    e.deltaS = 0
     e.canon = {
         length = 39,
         tip = {}
     }
+    e.smallProjectiles = {}
+    e.bigProjectiles = {}
     setmetatable(e, Entity)
     return e
+end
+
+function Entity:updateProjectiles(dt)
+    if self.bigProjectiles then
+        for n = #self.bigProjectiles, 1, -1 do
+            if Projectile.update(self.bigProjectiles[n], dt) then
+                table.remove(self.bigProjectiles, n)
+            end
+        end
+    end
+
+    if self.smallProjectiles then
+        for n = #self.smallProjectiles, 1, -1 do
+            if Projectile.update(self.smallProjectiles[n], dt) then
+                table.remove(self.smallProjectiles, n)
+            end
+        end
+    end
+end
+
+function Entity:drawProjectiles()
+    if self.bigProjectiles then
+        for n = #self.bigProjectiles, 1, -1 do
+            Projectile.draw(self.bigProjectiles[n])
+        end
+    end
+
+    if self.smallProjectiles then
+        for n = #self.smallProjectiles, 1, -1 do
+            Projectile.draw(self.smallProjectiles[n])
+        end
+    end
+end
+
+function Entity:addBigProjectile(projectile, dt)
+    projectile.position.x = self.canon.tip.x
+    projectile.position.y = self.canon.tip.y
+    projectile.angle = self.angle
+    self.deltaB = self.deltaB + dt
+    if self.deltaB > bigP_treshold or #self.bigProjectiles == 0 then
+        table.insert(self.bigProjectiles, projectile)
+        self.deltaB = 0
+    end
+end
+
+function Entity:addSmallProjectile(projectile, dt)
+    self.deltaS = self.deltaS + dt
+    if self.deltaS > smallP_treshold or #self.smallProjectiles == 0 then
+        projectile.position.x = self.turrets[currentIndexTurret].position.x
+        projectile.position.y = self.turrets[currentIndexTurret].position.y
+        projectile.angle = self.turrets[currentIndexTurret].angle
+        table.insert(self.smallProjectiles, projectile)
+        self.deltaS = 0
+        currentIndexTurret = 3 - currentIndexTurret
+    end
 end
 
 function Entity:move(dt, v)
@@ -73,7 +136,10 @@ function Player:create()
 end
 
 function Player:update(dt)
+    self.canon.tip.x = self.position.x + math.cos(self.angle) * self.canon.length
+    self.canon.tip.y = self.position.y + math.sin(self.angle) * self.canon.length
     self:updateTurret()
+    self:updateProjectiles(dt)
 end
 
 function Player:updateTurret()
@@ -93,6 +159,7 @@ function Player:draw()
     for n = 1, #self.turrets do
         love.graphics.draw(self.sprites.turret, self.turrets[n].position.x, self.turrets[n].position.y, self.turrets[n].angle, self.size, self.size, self.turrets[n].origin.x, self.turrets[n].origin.y)
     end
+    self:drawProjectiles()
 end
 
 return {Player = Player}
