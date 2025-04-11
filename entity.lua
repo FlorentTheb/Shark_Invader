@@ -171,8 +171,16 @@ function Enemy:create(x, y)
     e.sprite = love.graphics.newImage("__images__/enemy.png")
     e.origin = {x = e.sprite:getWidth() / 2, y = e.sprite:getHeight() / 2}
     e.health = 100
-    e.delta = 0
+    e.deltaPatroling = 0
+    e.patroling = {
+        isTurning = false,
+        isMoving = true,
+        deltaAction = .5,
+        currentTime = 0,
+        turnDirection = 1
+    }
     e.speedMove = 50
+    e.speedRotate = 2
     e.state = {isIDLE = true, isPatroling = false, isChasing = false, isFiring = false, isFleeing = false}
     setmetatable(e, Enemy)
     return e
@@ -183,8 +191,34 @@ function Enemy:draw()
 end
 
 function Enemy:update(player, dt)
+    local pX = player.position.x
+    local pY = player.position.y
     self.canon.tip.x = self.position.x + math.cos(self.angle) * self.canon.length
     self.canon.tip.y = self.position.y + math.sin(self.angle) * self.canon.length
+    self:behave(dt)
+end
+
+function Enemy:behave(dt)
+    if self.patroling.currentTime == 0 then
+        self.patroling.isTurning = math.random() > .5
+    end
+    if self.patroling.isTurning then
+        if self.patroling.currentTime == 0 then
+            self.patroling.turnDirection = math.random(2)
+        end
+        if self.patroling.turnDirection == 1 then
+            self:turnLeft(dt)
+        else
+            self:turnRight(dt)
+        end
+    end
+    if self.patroling.isMoving then
+        self:move(dt, 1)
+    end
+    self.patroling.currentTime = self.patroling.currentTime + dt
+    if self.patroling.currentTime > self.patroling.deltaAction then
+        self.patroling.currentTime = 0
+    end
 end
 
 return {Player = Player, Enemy = Enemy}

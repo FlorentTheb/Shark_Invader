@@ -18,6 +18,9 @@ function love.update(dt)
     handleKeyboard(dt)
     handleMouse(dt)
     player:update(dt)
+    for n = 1, #enemies do
+        enemies[n]:update(player, dt)
+    end
 end
 
 function love.draw()
