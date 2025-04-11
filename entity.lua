@@ -77,9 +77,14 @@ function Player:update(dt)
 end
 
 function Player:updateTurret()
+    local mX, mY = love.mouse.getPosition()
     for n = 1, #self.turrets do
+        self.turrets[n].angle = math.atan2(mY - self.position.y, mX - self.position.x)
         self.turrets[n].position.x = self.position.x + math.cos(self.turrets[n].angle + math.pi * (1.5 - n)) * 8 * self.size
         self.turrets[n].position.y = self.position.y + math.sin(self.turrets[n].angle + math.pi * (1.5 - n)) * 8 * self.size
+
+        self.turrets[n].tip.x = self.turrets[n].position.x + math.cos(self.turrets[n].angle) * 12 * self.size
+        self.turrets[n].tip.y = self.turrets[n].position.y + math.sin(self.turrets[n].angle) * 12 * self.size
     end
 end
 
