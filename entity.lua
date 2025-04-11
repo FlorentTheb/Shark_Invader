@@ -18,6 +18,32 @@ function Entity:create(x, y)
     return e
 end
 
+function Entity:move(dt, v)
+    if self.position.x > 0 and self.position.x < love.graphics.getWidth() then
+        self.position.x = self.position.x + math.cos(self.angle) * v * self.speedMove * dt
+    elseif self.position.x <= 0 then
+        self.position.x = 1
+    else
+        self.position.x = love.graphics.getWidth() - 1
+    end
+
+    if self.position.y > 0 and self.position.y < love.graphics.getHeight() then
+        self.position.y = self.position.y + math.sin(self.angle) * v * self.speedMove * dt
+    elseif self.position.y <= 0 then
+        self.position.y = 1
+    else
+        self.position.y = love.graphics.getHeight() - 1
+    end
+end
+
+function Entity:turnRight(dt)
+    self.angle = self.angle + self.speedRotate * dt
+end
+
+function Entity:turnLeft(dt)
+    self.angle = self.angle - self.speedRotate * dt
+end
+
 local Player = {}
 setmetatable(Player, {__index = Entity})
 Player.__index = Player
