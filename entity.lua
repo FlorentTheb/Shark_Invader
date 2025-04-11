@@ -10,12 +10,62 @@ function Entity:create(x, y)
     e.position = {x = x, y = y}
     e.angle = 0
     e.size = 1
+    e.deltaB = 0
+    e.deltaS = 0
     e.canon = {
         length = 39,
         tip = {}
     }
+    e.smallProjectiles = {}
+    e.bigProjectiles = {}
     setmetatable(e, Entity)
     return e
+end
+
+function Entity:updateProjectiles(dt)
+    if self.bigProjectiles then
+        for n = #self.bigProjectiles, 1, -1 do
+            if Projectile.update(self.bigProjectiles[n], dt) then
+                table.remove(self.bigProjectiles, n)
+            end
+        end
+    end
+
+    if self.smallProjectiles then
+        for n = #self.smallProjectiles, 1, -1 do
+            if Projectile.update(self.smallProjectiles[n], dt) then
+                table.remove(self.smallProjectiles, n)
+            end
+        end
+    end
+end
+
+function Entity:drawProjectiles()
+    if self.bigProjectiles then
+        for n = #self.bigProjectiles, 1, -1 do
+            Projectile.draw(self.bigProjectiles[n])
+        end
+    end
+
+    if self.smallProjectiles then
+        for n = #self.smallProjectiles, 1, -1 do
+            Projectile.draw(self.smallProjectiles[n])
+        end
+    end
+end
+
+function Entity:addBigProjectile(projectile, dt)
+    projectile.position.x = self.canon.tip.x
+    projectile.position.y = self.canon.tip.y
+    projectile.angle = self.angle
+    table.insert(self.bigProjectiles, projectile)
+end
+
+function Entity:addSmallProjectile(projectile, dt)
+    projectile.position.x = self.turrets[1].position.x
+    projectile.position.y = self.turrets[1].position.y
+    projectile.angle = self.turrets[1].angle
+    table.insert(self.smallProjectiles, projectile)
 end
 
 function Entity:move(dt, v)
@@ -73,7 +123,10 @@ function Player:create()
 end
 
 function Player:update(dt)
+    self.canon.tip.x = self.position.x + math.cos(self.angle) * self.canon.length
+    self.canon.tip.y = self.position.y + math.sin(self.angle) * self.canon.length
     self:updateTurret()
+    self:updateProjectiles(dt)
 end
 
 function Player:updateTurret()
@@ -93,6 +146,7 @@ function Player:draw()
     for n = 1, #self.turrets do
         love.graphics.draw(self.sprites.turret, self.turrets[n].position.x, self.turrets[n].position.y, self.turrets[n].angle, self.size, self.size, self.turrets[n].origin.x, self.turrets[n].origin.y)
     end
+    self:drawProjectiles()
 end
 
 return {Player = Player}
