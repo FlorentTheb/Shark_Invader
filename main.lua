@@ -15,7 +15,7 @@ function love.load()
 end
 
 function love.update(dt)
-    player:update(dt)
+    player:update(enemies, dt)
     for n = 1, #enemies do
         enemies[n]:update(player, dt)
     end
