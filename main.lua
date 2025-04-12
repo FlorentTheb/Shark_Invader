@@ -11,7 +11,7 @@ function love.load()
     love.graphics.setBackgroundColor({0.6, 0.8, 1})
     Projectile:init()
     player = Player:create()
-    table.insert(enemies, Enemy:create(500, 500))
+    table.insert(enemies, Enemy:create(50, 50))
 end
 
 function love.update(dt)

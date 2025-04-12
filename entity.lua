@@ -5,6 +5,8 @@ local bigP_treshold = 0.3
 local smallP_treshold = 0.1
 local currentIndexTurret = 1
 
+local angleComparisonTreshold = 0.01
+
 function Entity:create(x, y)
     local e = {}
     e.body = {
@@ -13,7 +15,6 @@ function Entity:create(x, y)
         position = {x = x, y = y},
         origin
     }
-    e.angle = 0
     e.speedMove = 200
     e.speedRotate = 5
     e.size = 1
@@ -103,21 +104,15 @@ function Entity:move(dt, v)
 end
 
 function Entity:turnRight(dt)
-    self.body.angle = self.body.angle + self.speedRotate * dt
+    self.body.angle = (self.body.angle + self.speedRotate * dt) % (math.pi * 2)
 end
 
 function Entity:turnLeft(dt)
-    self.body.angle = self.body.angle - self.speedRotate * dt
-end
-
-function Entity:draw()
-    love.graphics.draw(self.body.sprite, self.body.position.x, self.body.position.y, self.body.angle, self.size, self.size, self.body.origin.x, self.body.origin.y)
-    if self.turret then
-        for n = 1, #self.turret.positions do
-            love.graphics.draw(self.turret.sprite, self.turret.positions[n].x, self.turret.positions[n].y, self.turret.angle, self.size, self.size, self.turret.origin.x, self.turret.origin.y)
-        end
+    self.body.angle = (self.body.angle - self.speedRotate * dt) % (math.pi * 2)
+    -- On s'assure d'avoir un angle positif (pour des comparaisons d'angle) entre 0 et 2 PI
+    if self.body.angle < 0 then
+        self.body.angle = math.pi * 2 + self.body.angle
     end
-    self:drawProjectiles()
 end
 
 local Player = {}
@@ -189,6 +184,19 @@ function Player:updateTurret()
     end
 end
 
+function Player:draw()
+    love.graphics.draw(self.body.sprite, self.body.position.x, self.body.position.y, self.body.angle, self.size, self.size, self.body.origin.x, self.body.origin.y)
+    if self.turret then
+        for n = 1, #self.turret.positions do
+            love.graphics.draw(self.turret.sprite, self.turret.positions[n].x, self.turret.positions[n].y, self.turret.angle, self.size, self.size, self.turret.origin.x, self.turret.origin.y)
+        end
+    end
+    self:drawProjectiles()
+    love.graphics.circle("line", self.body.position.x, self.body.position.y, 200)
+    love.graphics.circle("line", self.body.position.x, self.body.position.y, 400)
+    love.graphics.circle("line", self.body.position.x, self.body.position.y, 600)
+end
+
 local Enemy = {}
 setmetatable(Enemy, {__index = Entity})
 Enemy.__index = Enemy
@@ -201,25 +209,91 @@ function Enemy:create(x, y)
     e.deltaPatroling = 0
     e.patroling = {
         isTurning = false,
-        isMoving = true,
         deltaAction = .5,
         currentTime = 0,
         turnDirection = 1
     }
     e.speedMove = 50
     e.speedRotate = 2
-    e.state = {isIDLE = true, isPatroling = false, isChasing = false, isFiring = false, isFleeing = false}
+    e.state = {isPatroling = true, isChasing = false, isFiring = false, isFleeing = false}
     setmetatable(e, Enemy)
     return e
+end
+
+function Enemy:draw()
+    love.graphics.push("all")
+    if self.state.isPatroling then
+        love.graphics.setColor({1, 1, 1})
+    elseif self.state.isChasing then
+        love.graphics.setColor({1, 1, 0.7})
+    elseif self.state.isFiring then
+        love.graphics.setColor({1, 0.7, 0.7})
+    elseif self.state.isFleeing then
+        love.graphics.setColor({0.7, 0.7, 1})
+    end
+    love.graphics.draw(self.body.sprite, self.body.position.x, self.body.position.y, self.body.angle, self.size, self.size, self.body.origin.x, self.body.origin.y)
+    love.graphics.pop()
+    self:drawProjectiles()
 end
 
 function Enemy:update(player, dt)
     self.canon.tip.x = self.body.position.x + math.cos(self.body.angle) * self.canon.length
     self.canon.tip.y = self.body.position.y + math.sin(self.body.angle) * self.canon.length
-    self:behave(dt)
+    self:updateState(player, dt)
+    self:behave(player, dt)
+    self:updateProjectiles(dt)
 end
 
-function Enemy:behave(dt)
+function Enemy:updateState(player, dt)
+    local pX = player.body.position.x
+    local pY = player.body.position.y
+    local dX = pX - self.body.position.x
+    local dY = pY - self.body.position.y
+    local squaredDist = dX * dX + dY * dY
+    if squaredDist >= 600 * 600 then
+        self.state = {
+            isPatroling = true,
+            isChasing = false,
+            isFiring = false,
+            isFleeing = false
+        }
+    elseif squaredDist < 600 * 600 and squaredDist >= 400 * 400 then
+        self.state = {
+            isPatroling = false,
+            isChasing = true,
+            isFiring = false,
+            isFleeing = false
+        }
+    elseif squaredDist < 400 * 400 and squaredDist >= 200 * 200 then
+        self.state = {
+            isPatroling = false,
+            isChasing = false,
+            isFiring = true,
+            isFleeing = false
+        }
+    elseif squaredDist < 200 * 200 then
+        self.state = {
+            isPatroling = false,
+            isChasing = false,
+            isFiring = false,
+            isFleeing = true
+        }
+    end
+end
+
+function Enemy:behave(player, dt)
+    if self.state.isPatroling then
+        self:patrol(dt)
+    elseif self.state.isChasing then
+        self:chase(player, dt)
+    elseif self.state.isFiring then
+        self:fire(player, dt)
+    elseif self.state.isFleeing then
+        self:flee(player, dt)
+    end
+end
+
+function Enemy:patrol(dt)
     if self.patroling.currentTime == 0 then
         self.patroling.isTurning = math.random() > .5
     end
@@ -233,13 +307,48 @@ function Enemy:behave(dt)
             self:turnRight(dt)
         end
     end
-    if self.patroling.isMoving then
-        self:move(dt, 1)
-    end
+    self:move(dt, 1)
     self.patroling.currentTime = self.patroling.currentTime + dt
     if self.patroling.currentTime > self.patroling.deltaAction then
         self.patroling.currentTime = 0
     end
+end
+
+function Enemy:chase(player, dt)
+    local pX = player.body.position.x
+    local pY = player.body.position.y
+    local dX = pX - self.body.position.x
+    local dY = pY - self.body.position.y
+    local angleTarget = (math.atan2(dY, dX)) % (2 * math.pi)
+    local diff = (angleTarget - self.body.angle + math.pi) % (2 * math.pi) - math.pi
+    if math.abs(diff) > angleComparisonTreshold then
+        if diff > 0 then
+            self:turnRight(dt)
+        else
+            self:turnLeft(dt)
+        end
+    end
+    self:move(dt, 1)
+end
+
+function Enemy:fire(player, dt)
+    local pX = player.body.position.x
+    local pY = player.body.position.y
+    local dX = pX - self.body.position.x
+    local dY = pY - self.body.position.y
+    local squaredDist = dX * dX + dY * dY
+    self.body.angle = math.atan2(dY, dX)
+    self:addBigProjectile(Projectile:create(1), dt)
+end
+
+function Enemy:flee(player, dt)
+    local pX = player.body.position.x
+    local pY = player.body.position.y
+    local dX = pX - self.body.position.x
+    local dY = pY - self.body.position.y
+    local squaredDist = dX * dX + dY * dY
+    self.body.angle = math.atan2(dY, dX) + math.pi
+    self:move(dt, 1)
 end
 
 return {Player = Player, Enemy = Enemy}
