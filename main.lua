@@ -15,9 +15,11 @@ function love.load()
 end
 
 function love.update(dt)
-    player:update(dt)
-    for n = 1, #enemies do
-        enemies[n]:update(player, dt)
+    player:update(enemies, dt)
+    for n = #enemies, 1, -1 do
+        if enemies[n]:update(player, dt) then
+            table.remove(enemies, n)
+        end
     end
 end
 
