@@ -7,8 +7,9 @@ local currentIndexTurret = 1
 
 local angleComparisonTreshold = 0.01
 
-function Entity:create(x, y)
+function Entity:create(x, y, type)
     local e = {}
+    e.type = type
     e.body = {
         sprite,
         angle = 0,
@@ -140,7 +141,7 @@ setmetatable(Player, {__index = Entity})
 Player.__index = Player
 
 function Player:create()
-    local p = Entity:create(love.graphics.getWidth() * .5, love.graphics.getHeight() * .5)
+    local p = Entity:create(love.graphics.getWidth() * .5, love.graphics.getHeight() * .5, "player")
     p.body.sprite = love.graphics.newImage("__images__/shark_body.png")
     p.body.origin = {x = p.body.sprite:getWidth() / 2, y = p.body.sprite:getHeight() / 2}
     p.turret = {}
@@ -166,12 +167,12 @@ function Player:create()
     return p
 end
 
-function Player:update(dt)
+function Player:update(enemies, dt)
     self.canon.tip.x = self.body.position.x + math.cos(self.body.angle) * self.canon.length
     self.canon.tip.y = self.body.position.y + math.sin(self.body.angle) * self.canon.length
     self:handleInputs(dt)
     self:updateTurret()
-    self:updateProjectiles(dt)
+    self:updateProjectiles(enemies, dt)
 end
 
 function Player:handleInputs(dt)
@@ -227,7 +228,7 @@ setmetatable(Enemy, {__index = Entity})
 Enemy.__index = Enemy
 
 function Enemy:create(x, y)
-    local e = Entity:create(x, y)
+    local e = Entity:create(x, y, "enemy")
     e.body.sprite = love.graphics.newImage("__images__/enemy.png")
     e.body.origin = {x = e.body.sprite:getWidth() / 2, y = e.body.sprite:getHeight() / 2}
     e.hp = {
@@ -270,7 +271,7 @@ function Enemy:update(player, dt)
     self.canon.tip.y = self.body.position.y + math.sin(self.body.angle) * self.canon.length
     self:updateState(player, dt)
     self:behave(player, dt)
-    self:updateProjectiles(dt)
+    self:updateProjectiles(player, dt)
 end
 
 function Enemy:updateState(player, dt)
