@@ -115,6 +115,26 @@ function Entity:turnLeft(dt)
     end
 end
 
+function Entity:drawHealth()
+    local ratioRemainingHealth = self.hp.current / self.hp.max
+    local ratioMissingHealth = 1 - ratioRemainingHealth
+    local widthHealthBar = 100
+    local heightHealthBar = 10
+    local startRemainingHealthX = self.body.position.x - widthHealthBar * .5
+    local startRemainingHealthY = self.body.position.y - self.body.sprite:getHeight() * .7
+    local startMissingHealthX = startRemainingHealthX + widthHealthBar * ratioRemainingHealth
+    print(ratioRemainingHealth, ratioMissingHealth)
+    love.graphics.push("all")
+    love.graphics.setColor({0, 1, 0})
+    love.graphics.rectangle("fill", startRemainingHealthX, startRemainingHealthY, widthHealthBar * ratioRemainingHealth, heightHealthBar)
+    love.graphics.setColor({1, 0.3, 0.3})
+    love.graphics.rectangle("fill", startMissingHealthX, startRemainingHealthY, widthHealthBar * ratioMissingHealth, heightHealthBar)
+    love.graphics.setColor({0, 0, 0})
+    love.graphics.rectangle("line", startRemainingHealthX, startRemainingHealthY, widthHealthBar, heightHealthBar)
+
+    love.graphics.pop()
+end
+
 local Player = {}
 setmetatable(Player, {__index = Entity})
 Player.__index = Player
@@ -128,7 +148,7 @@ function Player:create()
     p.turret.angle = 0
     p.hp = {
         max = 100,
-        current = 100
+        current = 75
     }
     p.turret.origin = {
         x = p.turret.sprite:getWidth() / 2,
@@ -196,6 +216,7 @@ function Player:draw()
         end
     end
     self:drawProjectiles()
+    self:drawHealth()
     love.graphics.circle("line", self.body.position.x, self.body.position.y, 200)
     love.graphics.circle("line", self.body.position.x, self.body.position.y, 400)
     love.graphics.circle("line", self.body.position.x, self.body.position.y, 600)
@@ -241,6 +262,7 @@ function Enemy:draw()
     love.graphics.draw(self.body.sprite, self.body.position.x, self.body.position.y, self.body.angle, self.size, self.size, self.body.origin.x, self.body.origin.y)
     love.graphics.pop()
     self:drawProjectiles()
+    self:drawHealth()
 end
 
 function Enemy:update(player, dt)
