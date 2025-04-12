@@ -126,6 +126,10 @@ function Player:create()
     p.turret = {}
     p.turret.sprite = love.graphics.newImage("__images__/shark_turret.png")
     p.turret.angle = 0
+    p.hp = {
+        max = 100,
+        current = 100
+    }
     p.turret.origin = {
         x = p.turret.sprite:getWidth() / 2,
         y = p.turret.sprite:getHeight() / 2
@@ -205,7 +209,10 @@ function Enemy:create(x, y)
     local e = Entity:create(x, y)
     e.body.sprite = love.graphics.newImage("__images__/enemy.png")
     e.body.origin = {x = e.body.sprite:getWidth() / 2, y = e.body.sprite:getHeight() / 2}
-    e.health = 100
+    e.hp = {
+        max = 100,
+        current = 100
+    }
     e.deltaPatroling = 0
     e.patroling = {
         isTurning = false,
