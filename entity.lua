@@ -150,8 +150,31 @@ end
 function Player:update(dt)
     self.canon.tip.x = self.body.position.x + math.cos(self.body.angle) * self.canon.length
     self.canon.tip.y = self.body.position.y + math.sin(self.body.angle) * self.canon.length
+    self:handleInputs(dt)
     self:updateTurret()
     self:updateProjectiles(dt)
+end
+
+function Player:handleInputs(dt)
+    if love.keyboard.isDown("z") then
+        self:move(dt, 1)
+    elseif love.keyboard.isDown("s") then
+        self:move(dt, -1)
+    end
+
+    if love.keyboard.isDown("q") then
+        self:turnLeft(dt)
+    elseif love.keyboard.isDown("d") then
+        self:turnRight(dt)
+    end
+
+    if love.keyboard.isDown("space") then
+        self:addBigProjectile(Projectile:create(1), dt)
+    end
+
+    if love.mouse.isDown(1) then
+        self:addSmallProjectile(Projectile:create(2), dt)
+    end
 end
 
 function Player:updateTurret()
