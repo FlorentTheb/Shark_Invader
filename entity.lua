@@ -31,10 +31,10 @@ function Entity:create(x, y, type)
     return e
 end
 
-function Entity:updateProjectiles(dt)
+function Entity:updateProjectiles(entity, dt)
     if self.bigProjectiles then
         for n = #self.bigProjectiles, 1, -1 do
-            if Projectile.update(self.bigProjectiles[n], dt) then
+            if Projectile.update(entity, self.bigProjectiles[n], dt) then
                 table.remove(self.bigProjectiles, n)
             end
         end
@@ -42,7 +42,7 @@ function Entity:updateProjectiles(dt)
 
     if self.smallProjectiles then
         for n = #self.smallProjectiles, 1, -1 do
-            if Projectile.update(self.smallProjectiles[n], dt) then
+            if Projectile.update(entity, self.smallProjectiles[n], dt) then
                 table.remove(self.smallProjectiles, n)
             end
         end
@@ -116,15 +116,65 @@ function Entity:turnLeft(dt)
     end
 end
 
+function Entity:isPointInHitbox(x, y)
+    -- On va check si le point est du même côté des 4 segments de la hitbox (produit vectoriel)
+    local hitbox = {
+        {
+            x = self.body.position.x - math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.cos(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5,
+            y = self.body.position.y - math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.sin(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5
+        },
+        {
+            x = self.body.position.x + math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.cos(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5,
+            y = self.body.position.y + math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.sin(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5
+        },
+        {
+            x = self.body.position.x + math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.cos(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5,
+            y = self.body.position.y + math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.sin(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5
+        },
+        {
+            x = self.body.position.x - math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.cos(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5,
+            y = self.body.position.y - math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.sin(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5
+        }
+    }
+
+    local refSign  -- signe d'un coté
+
+    for i = 1, #hitbox do
+        local a = hitbox[i]
+        local b = hitbox[(i % 4) + 1]
+
+        local AB = {
+            -- Vecteur du côté que l'on check
+            x = b.x - a.x,
+            y = b.y - a.y
+        }
+        local APoint = {
+            -- Vecteur depuis le coin actuel jusqu'au point à check
+            x = x - a.x,
+            y = y - a.y
+        }
+        local prodVec = AB.x * APoint.y - AB.y * APoint.x
+
+        if i == 1 then
+            refSign = prodVec > 0 and 1 or -1
+        else
+            if (prodVec > 0 and refSign < 0) or (prodVec < 0 and refSign > 0) then
+                return false -- Dès que l'on a un des produits vectoriels différents d'un autre, on sait que l'on sera en dehors de la hitbox
+            end
+        end
+    end
+
+    return true -- Tous les produits vectoriels ont le même signe : on est à l'intérieur du rectangle
+end
+
 function Entity:drawHealth()
     local ratioRemainingHealth = self.hp.current / self.hp.max
     local ratioMissingHealth = 1 - ratioRemainingHealth
     local widthHealthBar = 100
     local heightHealthBar = 10
     local startRemainingHealthX = self.body.position.x - widthHealthBar * .5
-    local startRemainingHealthY = self.body.position.y - self.body.sprite:getHeight() * .7
+    local startRemainingHealthY = self.body.position.y - self.body.sprite:getWidth() * .5 - heightHealthBar
     local startMissingHealthX = startRemainingHealthX + widthHealthBar * ratioRemainingHealth
-    print(ratioRemainingHealth, ratioMissingHealth)
     love.graphics.push("all")
     love.graphics.setColor({0, 1, 0})
     love.graphics.rectangle("fill", startRemainingHealthX, startRemainingHealthY, widthHealthBar * ratioRemainingHealth, heightHealthBar)
@@ -136,6 +186,29 @@ function Entity:drawHealth()
     love.graphics.pop()
 end
 
+function Entity:drawHitbox()
+    local hitbox = {
+        {
+            x = self.body.position.x - math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.cos(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5,
+            y = self.body.position.y - math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.sin(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5
+        },
+        {
+            x = self.body.position.x + math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.cos(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5,
+            y = self.body.position.y + math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.sin(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5
+        },
+        {
+            x = self.body.position.x + math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.cos(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5,
+            y = self.body.position.y + math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.sin(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5
+        },
+        {
+            x = self.body.position.x - math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.cos(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5,
+            y = self.body.position.y - math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.sin(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5
+        }
+    }
+
+    love.graphics.polygon("line", hitbox[1].x, hitbox[1].y, hitbox[2].x, hitbox[2].y, hitbox[3].x, hitbox[3].y, hitbox[4].x, hitbox[4].y)
+end
+
 local Player = {}
 setmetatable(Player, {__index = Entity})
 Player.__index = Player
@@ -143,13 +216,13 @@ Player.__index = Player
 function Player:create()
     local p = Entity:create(love.graphics.getWidth() * .5, love.graphics.getHeight() * .5, "player")
     p.body.sprite = love.graphics.newImage("__images__/shark_body.png")
-    p.body.origin = {x = p.body.sprite:getWidth() / 2, y = p.body.sprite:getHeight() / 2}
+    p.body.origin = {x = p.body.sprite:getWidth() / 2 + 2, y = p.body.sprite:getHeight() / 2}
     p.turret = {}
     p.turret.sprite = love.graphics.newImage("__images__/shark_turret.png")
     p.turret.angle = 0
     p.hp = {
         max = 100,
-        current = 75
+        current = 100
     }
     p.turret.origin = {
         x = p.turret.sprite:getWidth() / 2,
@@ -218,9 +291,12 @@ function Player:draw()
     end
     self:drawProjectiles()
     self:drawHealth()
+    local startHitboxX = self.body.position.x - self.body.sprite:getWidth() * .5
+    local startHitboxY = self.body.position.y - self.body.sprite:getHeight() * .5
     love.graphics.circle("line", self.body.position.x, self.body.position.y, 200)
     love.graphics.circle("line", self.body.position.x, self.body.position.y, 400)
     love.graphics.circle("line", self.body.position.x, self.body.position.y, 600)
+    self:drawHitbox()
 end
 
 local Enemy = {}
@@ -264,6 +340,7 @@ function Enemy:draw()
     love.graphics.pop()
     self:drawProjectiles()
     self:drawHealth()
+    self:drawHitbox()
 end
 
 function Enemy:update(player, dt)
@@ -272,6 +349,7 @@ function Enemy:update(player, dt)
     self:updateState(player, dt)
     self:behave(player, dt)
     self:updateProjectiles(player, dt)
+    return self.hp.current == 0
 end
 
 function Enemy:updateState(player, dt)

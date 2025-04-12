@@ -25,13 +25,38 @@ function Projectile:create(index)
     return p
 end
 
-function Projectile.update(projectile, dt)
+function Projectile.update(entity, projectile, dt)
     projectile.position.x = projectile.position.x + math.cos(projectile.angle) * projectile.speed * dt
     projectile.position.y = projectile.position.y + math.sin(projectile.angle) * projectile.speed * dt
 
     if projectile.position.x < 0 or projectile.position.x > love.graphics.getWidth() or projectile.position.y < 0 or projectile.position.y > love.graphics.getHeight() then
         return true
     else
+        if entity.body then --entity = player so we check player hitbox
+            if entity:isPointInHitbox(projectile.position.x, projectile.position.y) then
+                if entity.hp.current > 0 then
+                    entity.hp.current = entity.hp.current - projectile.damage
+                end
+                if entity.hp.current < 0 then
+                    entity.hp.current = 0
+                end
+                return true
+            else
+                return false
+            end
+        else -- on check tous les ennemis
+            for n = 1, #entity do
+                if entity[n]:isPointInHitbox(projectile.position.x, projectile.position.y) then
+                    if entity[n].hp.current > 0 then
+                        entity[n].hp.current = entity[n].hp.current - projectile.damage
+                    end
+                    if entity[n].hp.current < 0 then
+                        entity[n].hp.current = 0
+                    end
+                    return true
+                end
+            end
+        end
         return false
     end
 end
