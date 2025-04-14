@@ -124,7 +124,7 @@ function Entity:isPointInHitbox(x, y)
             y = self.body.position.y - math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.sin(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5
         },
         {
-            x = self.body.position.x + math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.cos(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5,
+            x = self.body.position.x + math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.cos(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5,
             y = self.body.position.y + math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.sin(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5
         },
         {
@@ -193,7 +193,7 @@ function Entity:drawHitbox()
             y = self.body.position.y - math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.sin(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5
         },
         {
-            x = self.body.position.x + math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.cos(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5,
+            x = self.body.position.x + math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.cos(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5,
             y = self.body.position.y + math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.sin(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5
         },
         {
