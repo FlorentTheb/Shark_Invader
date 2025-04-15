@@ -1,6 +1,6 @@
 function love.conf(t)
     t.window.title = "Fish Defender"
-    t.window.width = 1400
-    t.window.height = 1000
+    t.window.width = 1200
+    t.window.height = 900
     t.window.vsync = 1 -- Synchronise les fps au monitor
 end
