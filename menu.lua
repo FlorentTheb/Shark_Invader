@@ -57,14 +57,17 @@ function menu.draw()
         love.graphics.push("all")
         local b = menu.buttonTexts[n]
         love.graphics.setColor({0, 0, 0, 0.3})
-        love.graphics.rectangle("fill", b.currentPos.x - menu.buttonWidth * .5 + menu.buttonShadowOffset, b.currentPos.y - menu.buttonHeight * .5 + menu.buttonShadowOffset, menu.buttonWidth, menu.buttonHeight, 10, 10)
+        local buttonTopLeftX = b.currentPos.x - menu.buttonWidth * .5
+        local buttonTopLeftY = b.currentPos.y - menu.buttonHeight * .5
+        local buttonRoundCornerRatio = 10
+        love.graphics.rectangle("fill", buttonTopLeftX + menu.buttonShadowOffset, buttonTopLeftY + menu.buttonShadowOffset, menu.buttonWidth, menu.buttonHeight, buttonRoundCornerRatio, buttonRoundCornerRatio)
         if b.isHover then
             love.graphics.setColor({0, .7, .7})
         else
             love.graphics.setColor({0, .5, .5})
         end
         love.graphics.setLineWidth(5)
-        love.graphics.rectangle("fill", b.currentPos.x - menu.buttonWidth * .5, b.currentPos.y - menu.buttonHeight * .5, menu.buttonWidth, menu.buttonHeight, 10, 10)
+        love.graphics.rectangle("fill", buttonTopLeftX, buttonTopLeftY, menu.buttonWidth, menu.buttonHeight, buttonRoundCornerRatio, buttonRoundCornerRatio)
 
         love.graphics.setColor({1, 1, 1})
         love.graphics.printf(b.text, b.font, b.currentPos.x, b.currentPos.y, menu.buttonWidth, "left", 0, 1, 1, b.origin.x, b.origin.y)
@@ -120,16 +123,16 @@ function menu.checkMousePressed(mX, mY, button)
                     if button == 1 then
                         b.isClicked = true
                     else
-                        b.isClicked =false
+                        b.isClicked = false
                     end
                 else
-                    b.isClicked =false
+                    b.isClicked = false
                 end
             else
-                b.isClicked =false
+                b.isClicked = false
             end
         else
-            b.isClicked =false
+            b.isClicked = false
         end
     end
 end
