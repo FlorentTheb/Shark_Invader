@@ -42,3 +42,15 @@ function love.draw()
         end
     end
 end
+
+function love.mousepressed(x, y, button)
+    if scene == "menu" then
+        menu.checkMousePressed(x, y, button)
+    end
+end
+
+function love.mousereleased(x, y, button)
+    if scene == "menu" then
+        menu.checkMouseRelease(x, y, button)
+    end
+end
