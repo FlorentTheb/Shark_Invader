@@ -7,6 +7,7 @@ function menu.init()
     menu.buttonTexts = {}
     menu.createButtonText("Play")
     menu.createButtonText("Options")
+    menu.createButtonText("Credits")
     menu.createButtonText("Exit")
     menu.buttonPadding = 20
     menu.buttonWidth = 0
@@ -17,8 +18,6 @@ function menu.init()
         menu.buttonWidth = math.max(menu.buttonWidth, math.floor(menu.buttonTexts[n].font:getWidth(menu.buttonTexts[n].text)) + 2 * menu.buttonPadding)
         menu.buttonTexts[n].finalePos.x = love.graphics.getWidth() * .5
         menu.buttonTexts[n].finalePos.y = math.floor(love.graphics.getHeight() / (#menu.buttonTexts + 1)) * n
-
-        print(menu.buttonWidth)
     end
 
     for n = 1, #menu.buttonTexts do
@@ -43,6 +42,7 @@ function menu.createButtonText(buttonText)
         y = menu.fontUpperSpace + (b.font:getAscent() - menu.fontUpperSpace) * .5
     }
     b.isHover = false
+    b.isClicked = false
 
     table.insert(menu.buttonTexts, b)
 end
@@ -108,6 +108,47 @@ function checkButtonHover()
         love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
     else
         love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
+    end
+end
+
+function menu.checkMousePressed(mX, mY, button)
+    for n = 1, #menu.buttonTexts do
+        local b = menu.buttonTexts[n]
+        if b.currentPos.x == b.finalePos.x then
+            if mX < b.currentPos.x + menu.buttonWidth * .5 and mX > b.currentPos.x - menu.buttonWidth * .5 then
+                if mY < b.currentPos.y + menu.buttonHeight * .5 and mY > b.currentPos.y - menu.buttonHeight * .5 then
+                    if button == 1 then
+                        b.isClicked = true
+                    else
+                        b.isClicked =false
+                    end
+                else
+                    b.isClicked =false
+                end
+            else
+                b.isClicked =false
+            end
+        else
+            b.isClicked =false
+        end
+    end
+end
+
+function menu.checkMouseRelease(mX, mY, button)
+    for n = 1, #menu.buttonTexts do
+        local b = menu.buttonTexts[n]
+        if b.currentPos.x == b.finalePos.x then
+            if mX < b.currentPos.x + menu.buttonWidth * .5 and mX > b.currentPos.x - menu.buttonWidth * .5 then
+                if mY < b.currentPos.y + menu.buttonHeight * .5 and mY > b.currentPos.y - menu.buttonHeight * .5 then
+                    if n == 1 and button == 1 and b.isClicked then
+                        b.isClicked = false
+                        b.isHover = false
+                        scene = "game"
+                        love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
+                    end
+                end
+            end
+        end
     end
 end
 
