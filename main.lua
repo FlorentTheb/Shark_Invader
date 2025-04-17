@@ -2,6 +2,7 @@ local Entity = require "entity"
 local Player = Entity.Player
 local Enemy = Entity.Enemy
 local menu = require "menu"
+require "utils/factoryButton"
 require "Projectile"
 
 local player
@@ -44,13 +45,13 @@ function love.draw()
 end
 
 function love.mousepressed(x, y, button)
-    if scene == "menu" then
-        menu.checkMousePressed(x, y, button)
+    if scene == "menu" and button == 1 then
+        menu.checkMousePressed()
     end
 end
 
 function love.mousereleased(x, y, button)
-    if scene == "menu" then
-        menu.checkMouseRelease(x, y, button)
+    if scene == "menu" and button == 1 then
+        menu.checkMouseRelease()
     end
 end
