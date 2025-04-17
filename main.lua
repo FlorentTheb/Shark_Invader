@@ -2,7 +2,6 @@ local Entity = require "entity"
 local Player = Entity.Player
 local Enemy = Entity.Enemy
 local menu = require "menu"
-require "utils/factoryButton"
 require "Projectile"
 
 local player

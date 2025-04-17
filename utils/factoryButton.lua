@@ -1,4 +1,4 @@
-ButtonFactoryModule = {}
+local ButtonFactoryModule = {}
 
 local function createLabel(font, text)
     local label = {}
@@ -134,3 +134,5 @@ function ButtonFactoryModule.createButtonList(listButtonsLabel, font, isHorizont
 
     return listButton
 end
+
+return ButtonFactoryModule

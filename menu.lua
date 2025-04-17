@@ -1,4 +1,5 @@
 local menu = {}
+local buttonFactory = require "utils/factoryButton"
 
 function menu.init()
     menu.font = love.graphics.newFont("__fonts__/bubbles.ttf", 100)
@@ -8,7 +9,7 @@ function menu.init()
         currentTime = 0
     }
     menu.buttonLabels = {"Play", "Options", "Credits", "Exit"}
-    menu.buttons = ButtonFactoryModule.createButtonList(menu.buttonLabels, menu.font, false)
+    menu.buttons = buttonFactory.createButtonList(menu.buttonLabels, menu.font, false)
 end
 
 function menu.update(dt)
