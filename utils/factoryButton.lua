@@ -2,12 +2,12 @@ local ButtonFactoryModule = {}
 
 local function createLabel(font, text)
     local label = {}
-    local fontUpperSpace = font:getHeight() * 0.125
+    local fontUpperSpace = font:getHeight() * .125 -- Espace entre le haut de l'écriture et le haut de la font (1/8ème)
     label.font = font
     label.text = text
     label.origin = {
         x = font:getWidth(text) * .5,
-        y = fontUpperSpace + (font:getAscent() - fontUpperSpace) * .5
+        y = fontUpperSpace + (font:getAscent() - fontUpperSpace) * .5 -- on prend l'ascent pour ne pas tenir compte de l'espace sous l'écriture
     }
     label.angle = 0
     label.size = 1

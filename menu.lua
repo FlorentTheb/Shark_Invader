@@ -46,6 +46,7 @@ function menu.checkMouseRelease()
     for n = 1, #menu.buttons do
         if menu.buttons[n].isClicked() then
             if menu.buttons[n].label.text == "Play" then
+                love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
                 scene = "game"
             end
         end
