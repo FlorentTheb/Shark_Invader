@@ -261,10 +261,6 @@ function Player:handleInputs(dt)
         self:turnRight(dt)
     end
 
-    if love.keyboard.isDown("space") then
-        self:addBigProjectile(Projectile:create(1), dt)
-    end
-
     if love.mouse.isDown(1) then
         self:addSmallProjectile(Projectile:create(2), dt)
     end
