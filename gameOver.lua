@@ -3,6 +3,11 @@ local buttonFactory = require "utils/factoryButton"
 
 function gameover.init()
     gameover.font = love.graphics.newFont("__fonts__/bubbles.ttf", 100)
+    gameover.text = "Game Over"
+    gameover.size = {
+        width = gameover.font:getWidth(gameover.text),
+        height = gameover.font:getHeight()
+    }
     gameover.animation = {
         buttonSpeed = 600,
         deltaStartTimer = .5,
@@ -31,6 +36,10 @@ function gameover.update(dt)
 end
 
 function gameover.draw()
+    love.graphics.push("all")
+    love.graphics.setColor({0, 0.32, 0.8, 0.6})
+    love.graphics.printf(gameover.text, gameover.font, love.graphics.getWidth() * .5, love.graphics.getHeight() * .3, gameover.size.width, "left", 0, 2, 2, gameover.size.width * .5, gameover.size.height * .5)
+    love.graphics.pop()
     for n = 1, #gameover.buttons do
         gameover.buttons[n].draw()
     end
