@@ -26,6 +26,7 @@ end
 local function createButton(indexButton, totalButtons, currentLabel, font, isHorizontal, labelWidth)
     local button = {}
     button.padding = 20
+    button.margin = 20
     button.width = labelWidth + 2 * button.padding
     button.height = font:getHeight() + 2 * button.padding
     button.cornerRatio = 10
@@ -35,13 +36,19 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
     }
     button.color = {0, .5, .5, 1}
     button.position = {}
+    local xOrigin = love.graphics.getWidth() * .5 - (totalButtons - 1) * ((button.width + button.margin) * .5)
+    local yOrigin = love.graphics.getHeight() * .5 - (totalButtons - 1) * ((button.height + button.margin) * .5)
     button.position.finale = {
-        x = love.graphics.getWidth() * .5,
-        y = math.floor(love.graphics.getHeight() / (totalButtons + 1)) * indexButton
+        x = isHorizontal and xOrigin + (button.width + button.margin) * (indexButton - 1) or love.graphics.getWidth() * .5,
+        y = isHorizontal and love.graphics.getHeight() * .7 or yOrigin + (button.height + button.margin) * (indexButton - 1)
     }
     button.position.current = {
-        x = -button.width,
-        y = button.position.finale.y
+        x = isHorizontal and button.position.finale.x or -button.width,
+        y = isHorizontal and love.graphics.getHeight() + button.height or button.position.finale.y
+    }
+    button.vector = {
+        x = isHorizontal and 0 or 1,
+        y = isHorizontal and -1 or 0
     }
     button.state = {isHover = false, isClicked = false}
     button.label = createLabel(font, currentLabel)
@@ -82,12 +89,16 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
 
     function button.update(hasToMove, animationSpeed, dt)
         local current = button.position.current
+        print("current = [ " .. current.x .. " | " .. current.y .. " ]")
         local finale = button.position.finale
+        print("finale = [ " .. finale.x .. " | " .. finale.y .. " ]")
 
-        if current.x < finale.x and hasToMove then
-            current.x = current.x + animationSpeed * dt
-        elseif current.x > finale.x then
+        if (current.x < finale.x or current.y > finale.y) and hasToMove then
+            current.x = current.x + animationSpeed * button.vector.x * dt
+            current.y = current.y + animationSpeed * button.vector.y * dt
+        elseif current.x > finale.x or current.y < finale.y then
             current.x = finale.x
+            current.y = finale.y
         end
 
         if button.isMouseIn() then
