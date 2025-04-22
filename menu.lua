@@ -59,6 +59,8 @@ function menu.checkMouseRelease()
                 player:reset()
                 enemies = {}
                 table.insert(enemies, Enemy:create(50, 50))
+            elseif menu.buttons[n].label.text == "Exit" then
+                love.event.quit()
             end
         end
     end
