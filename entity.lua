@@ -300,10 +300,10 @@ function Player:draw()
     self:drawHealth()
     local startHitboxX = self.body.position.x - self.body.sprite:getWidth() * .5
     local startHitboxY = self.body.position.y - self.body.sprite:getHeight() * .5
-    love.graphics.circle("line", self.body.position.x, self.body.position.y, 200)
-    love.graphics.circle("line", self.body.position.x, self.body.position.y, 400)
-    love.graphics.circle("line", self.body.position.x, self.body.position.y, 600)
-    self:drawHitbox()
+    --love.graphics.circle("line", self.body.position.x, self.body.position.y, 200)
+    --love.graphics.circle("line", self.body.position.x, self.body.position.y, 400)
+    --love.graphics.circle("line", self.body.position.x, self.body.position.y, 600)
+    --self:drawHitbox()
 end
 
 local Enemy = {}
@@ -347,7 +347,7 @@ function Enemy:draw()
     love.graphics.pop()
     self:drawProjectiles()
     self:drawHealth()
-    self:drawHitbox()
+    --self:drawHitbox()
 end
 
 function Enemy:update(player, dt)
@@ -411,11 +411,9 @@ end
 function Enemy:patrol(dt)
     if self.patroling.currentTime == 0 then
         self.patroling.isTurning = math.random() > .5
+        self.patroling.turnDirection = math.random(2)
     end
     if self.patroling.isTurning then
-        if self.patroling.currentTime == 0 then
-            self.patroling.turnDirection = math.random(2)
-        end
         if self.patroling.turnDirection == 1 then
             self:turnLeft(dt)
         else

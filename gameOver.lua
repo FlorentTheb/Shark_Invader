@@ -61,6 +61,7 @@ function gameover.checkMouseRelease()
                 table.insert(enemies, Enemy:create(50, 50))
             elseif gameover.buttons[n].label.text == "Menu" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
+                gameover.reset()
                 scene = "menu"
             end
         end
