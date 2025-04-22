@@ -3,6 +3,7 @@ Player = Entity.Player
 Enemy = Entity.Enemy
 local Menu = require "menu"
 local GameOver = require "gameOver"
+local Pause = require "pause"
 require "Projectile"
 
 player = nil
@@ -14,6 +15,7 @@ function love.load()
     scene = "menu"
     Menu.init()
     GameOver.init()
+    Pause.init()
     math.randomseed(os.time())
     love.graphics.setBackgroundColor({0.6, 0.8, 1})
     Projectile:init()
@@ -32,6 +34,8 @@ function love.update(dt)
         end
     elseif scene == "gameover" then
         GameOver.update(dt)
+    elseif scene == "pause" then
+        Pause.update(dt)
     end
 end
 
@@ -45,6 +49,8 @@ function love.draw()
         end
     elseif scene == "gameover" then
         GameOver.draw()
+    elseif scene == "pause" then
+        Pause.draw()
     end
 end
 
@@ -53,6 +59,8 @@ function love.mousepressed(x, y, button)
         Menu.checkMousePressed()
     elseif scene == "gameover" and button == 1 then
         GameOver.checkMousePressed()
+    elseif scene == "pause" and button == 1 then
+        Pause.checkMousePressed()
     end
 end
 
@@ -61,11 +69,13 @@ function love.mousereleased(x, y, button)
         Menu.checkMouseRelease()
     elseif scene == "gameover" and button == 1 then
         GameOver.checkMouseRelease()
+    elseif scene == "pause" and button == 1 then
+        Pause.checkMouseRelease()
     end
 end
 
 function love.keypressed(key)
     if key == "escape" and scene == "game" then
-        scene = "gameover"
+        scene = "pause"
     end
 end
