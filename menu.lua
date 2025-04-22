@@ -42,12 +42,23 @@ function menu.checkMousePressed()
     end
 end
 
+function menu.reset()
+    for n = 1, #menu.buttons do
+        menu.buttons[n].reset(false)
+    end
+    menu.animation.currentTime = 0
+end
+
 function menu.checkMouseRelease()
     for n = 1, #menu.buttons do
         if menu.buttons[n].isClicked() then
             if menu.buttons[n].label.text == "Play" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
+                menu.reset()
                 scene = "game"
+                player:reset()
+                enemies = {}
+                table.insert(enemies, Enemy:create(50, 50))
             end
         end
     end

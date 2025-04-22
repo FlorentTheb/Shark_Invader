@@ -240,12 +240,23 @@ function Player:create()
     return p
 end
 
+function Player:reset()
+    self.body.position.x = love.graphics.getWidth() * .5
+    self.body.position.y = love.graphics.getHeight() * .5
+    self.smallProjectiles = {}
+    self.hp.current = self.hp.max
+    self.body.angle = 0
+end
+
 function Player:update(enemies, dt)
     self.canon.tip.x = self.body.position.x + math.cos(self.body.angle) * self.canon.length
     self.canon.tip.y = self.body.position.y + math.sin(self.body.angle) * self.canon.length
     self:handleInputs(dt)
     self:updateTurret()
     self:updateProjectiles(enemies, dt)
+    if self.hp.current == 0 then
+        scene = "gameover"
+    end
 end
 
 function Player:handleInputs(dt)

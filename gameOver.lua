@@ -42,12 +42,26 @@ function gameover.checkMousePressed()
     end
 end
 
+function gameover.reset()
+    for n = 1, #gameover.buttons do
+        gameover.buttons[n].reset(true)
+    end
+    gameover.animation.currentTime = 0
+end
+
 function gameover.checkMouseRelease()
     for n = 1, #gameover.buttons do
         if gameover.buttons[n].isClicked() then
-            if gameover.buttons[n].label.text == "Play" then
+            if gameover.buttons[n].label.text == "Restart" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
+                gameover.reset()
                 scene = "game"
+                player:reset()
+                enemies = {}
+                table.insert(enemies, Enemy:create(50, 50))
+            elseif gameover.buttons[n].label.text == "Menu" then
+                love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
+                scene = "menu"
             end
         end
     end

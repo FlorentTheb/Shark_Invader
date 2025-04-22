@@ -53,6 +53,21 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
     button.state = {isHover = false, isClicked = false}
     button.label = createLabel(font, currentLabel)
 
+    function button.reset(isHorizontal)
+        local xOrigin = love.graphics.getWidth() * .5 - (totalButtons - 1) * ((button.width + button.margin) * .5)
+        local yOrigin = love.graphics.getHeight() * .5 - (totalButtons - 1) * ((button.height + button.margin) * .5)
+        button.position.finale = {
+            x = isHorizontal and xOrigin + (button.width + button.margin) * (indexButton - 1) or love.graphics.getWidth() * .5,
+            y = isHorizontal and love.graphics.getHeight() * .7 or yOrigin + (button.height + button.margin) * (indexButton - 1)
+        }
+        button.position.current = {
+            x = isHorizontal and button.position.finale.x or -button.width,
+            y = isHorizontal and love.graphics.getHeight() + button.height or button.position.finale.y
+        }
+        button.state.isHover = false
+        button.state.isClicked = false
+    end
+
     function button.isClicked()
         if button.isMouseIn() and button.state.isClicked then
             return true
@@ -78,7 +93,7 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
 
         local isInXWise = mX <= rightBorderButton and mX >= leftBorderButton
         local isInYWise = mY <= lowerBorderButton and mY >= upperBorderButton
-        local isButtonNotMoving = button.position.current.x == button.position.finale.x
+        local isButtonNotMoving = button.position.current.x == button.position.finale.x and button.position.current.y == button.position.finale.y
 
         if isButtonNotMoving and isInXWise and isInYWise then
             return true
