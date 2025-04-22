@@ -63,3 +63,9 @@ function love.mousereleased(x, y, button)
         GameOver.checkMouseRelease()
     end
 end
+
+function love.keypressed(key)
+    if key == "escape" and scene == "game" then
+        scene = "gameover"
+    end
+end
