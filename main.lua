@@ -2,6 +2,7 @@ local Entity = require "entity"
 local Player = Entity.Player
 local Enemy = Entity.Enemy
 local menu = require "menu"
+local gameover = require "gameover"
 require "Projectile"
 
 local player
@@ -12,6 +13,7 @@ scene = nil
 function love.load()
     scene = "menu"
     menu.init()
+    gameover.init()
     math.randomseed(os.time())
     love.graphics.setBackgroundColor({0.6, 0.8, 1})
     Projectile:init()

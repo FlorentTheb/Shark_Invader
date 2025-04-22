@@ -89,9 +89,7 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
 
     function button.update(hasToMove, animationSpeed, dt)
         local current = button.position.current
-        print("current = [ " .. current.x .. " | " .. current.y .. " ]")
         local finale = button.position.finale
-        print("finale = [ " .. finale.x .. " | " .. finale.y .. " ]")
 
         if (current.x < finale.x or current.y > finale.y) and hasToMove then
             current.x = current.x + animationSpeed * button.vector.x * dt
