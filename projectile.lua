@@ -32,7 +32,6 @@ function Projectile:create(index, x, y, angle)
 
     function p.isHittingEntity()
         if p.index == 1 then -- Big projectile, check the player hitbox
-            print(p.position.x, p.position.y)
             if player:isPointInHitbox(p.position.x, p.position.y) then
                 if player.hp.current > 0 then
                     player.hp.current = player.hp.current - p.damage

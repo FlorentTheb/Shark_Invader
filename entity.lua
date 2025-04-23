@@ -193,7 +193,6 @@ function Player:draw()
         end
     end
     self:drawHealth()
-    self:drawHitbox()
 end
 
 local Enemy = {}
@@ -240,7 +239,6 @@ function Enemy:draw()
     love.graphics.draw(self.body.sprite, self.body.position.x, self.body.position.y, self.body.angle, self.size, self.size, self.body.origin.x, self.body.origin.y)
     love.graphics.pop()
     self:drawHealth()
-    --self:drawHitbox()
 end
 
 function Enemy:update(dt)
