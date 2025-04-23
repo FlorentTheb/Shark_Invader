@@ -2,19 +2,24 @@ local gameover = {}
 local buttonFactory = require "factory/buttons"
 
 function gameover.init()
-    gameover.font = love.graphics.newFont("__fonts__/bubbles.ttf", 100)
+    gameover.fonts = {
+        giant = love.graphics.newFont("__fonts__/bubbles.ttf", 200),
+        big = love.graphics.newFont("__fonts__/bubbles.ttf", 100),
+        medium = love.graphics.newFont("__fonts__/bubbles.ttf", 50),
+        small = love.graphics.newFont("__fonts__/bubbles.ttf", 25)
+    }
     gameover.text = "Game Over"
     gameover.size = {
-        width = gameover.font:getWidth(gameover.text),
-        height = gameover.font:getHeight()
+        width = gameover.fonts.giant:getWidth(gameover.text),
+        height = gameover.fonts.giant:getHeight()
     }
     gameover.animation = {
-        buttonSpeed = 600,
-        deltaStartTimer = .5,
+        buttonSpeed = 900,
+        deltaStartTimer = .3,
         currentTime = 0
     }
     gameover.buttonLabels = {"Restart", "Menu"}
-    gameover.buttons = buttonFactory.createButtonList(gameover.buttonLabels, gameover.font, true)
+    gameover.buttons = buttonFactory.createButtonList(gameover.buttonLabels, gameover.fonts.big, true)
 end
 
 function gameover.update(dt)
@@ -38,7 +43,7 @@ end
 function gameover.draw()
     love.graphics.push("all")
     love.graphics.setColor({0, 0.32, 0.8, 0.6})
-    love.graphics.printf(gameover.text, gameover.font, love.graphics.getWidth() * .5, love.graphics.getHeight() * .3, gameover.size.width, "left", 0, 2, 2, gameover.size.width * .5, gameover.size.height * .5)
+    love.graphics.printf(gameover.text, gameover.fonts.giant, love.graphics.getWidth() * .5, love.graphics.getHeight() * .3, gameover.size.width, "left", 0, 1, 1, gameover.size.width * .5, gameover.size.height * .5)
     love.graphics.pop()
     for n = 1, #gameover.buttons do
         gameover.buttons[n].draw()

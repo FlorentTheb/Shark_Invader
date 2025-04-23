@@ -2,19 +2,24 @@ local pause = {}
 local buttonFactory = require "factory/buttons"
 
 function pause.init()
-    pause.font = love.graphics.newFont("__fonts__/bubbles.ttf", 100)
+    pause.fonts = {
+        giant = love.graphics.newFont("__fonts__/bubbles.ttf", 200),
+        big = love.graphics.newFont("__fonts__/bubbles.ttf", 100),
+        medium = love.graphics.newFont("__fonts__/bubbles.ttf", 50),
+        small = love.graphics.newFont("__fonts__/bubbles.ttf", 25)
+    }
     pause.text = "Pause"
     pause.size = {
-        width = pause.font:getWidth(pause.text),
-        height = pause.font:getHeight()
+        width = pause.fonts.giant:getWidth(pause.text),
+        height = pause.fonts.giant:getHeight()
     }
     pause.animation = {
-        buttonSpeed = 600,
-        deltaStartTimer = .5,
+        buttonSpeed = 900,
+        deltaStartTimer = .3,
         currentTime = 0
     }
     pause.buttonLabels = {"Resume", "Menu"}
-    pause.buttons = buttonFactory.createButtonList(pause.buttonLabels, pause.font, true)
+    pause.buttons = buttonFactory.createButtonList(pause.buttonLabels, pause.fonts.big, true)
 end
 
 function pause.update(dt)
@@ -38,7 +43,7 @@ end
 function pause.draw()
     love.graphics.push("all")
     love.graphics.setColor({0, 0.32, 0.8, 0.6})
-    love.graphics.printf(pause.text, pause.font, love.graphics.getWidth() * .5, love.graphics.getHeight() * .3, pause.size.width, "left", 0, 2, 2, pause.size.width * .5, pause.size.height * .5)
+    love.graphics.printf(pause.text, pause.fonts.giant, love.graphics.getWidth() * .5, love.graphics.getHeight() * .3, pause.size.width, "left", 0, 1, 1, pause.size.width * .5, pause.size.height * .5)
     love.graphics.pop()
     for n = 1, #pause.buttons do
         pause.buttons[n].draw()
