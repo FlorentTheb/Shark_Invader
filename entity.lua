@@ -202,6 +202,7 @@ Enemy.__index = Enemy
 
 function Enemy:create(x, y)
     local e = Entity:create(x, y, "enemy")
+    setmetatable(e, Enemy)
     e.body.sprite = love.graphics.newImage("__images__/enemy.png")
     e.body.origin = {x = e.body.sprite:getWidth() / 2, y = e.body.sprite:getHeight() / 2}
     e.hp = {
@@ -215,6 +216,7 @@ function Enemy:create(x, y)
         currentTime = 0,
         turnDirection = 1
     }
+    e.color = {1, 1, 1, 1}
     e.projectileTimerTreshold = 0.3
     e.canon = {
         length = 39,
@@ -222,22 +224,19 @@ function Enemy:create(x, y)
     }
     e.speedMove = 50
     e.speedRotate = 2
-    e.state = {isPatroling = true, isChasing = false, isFiring = false, isFleeing = false}
-    setmetatable(e, Enemy)
+    e.state = "patroling"
+    e.states = {
+        patroling = function(dt) e:patrol(dt) end,
+        chasing   = function(dt) e:chase(dt) end,
+        firing    = function(dt) e:fire(dt) end,
+        fleeing   = function(dt) e:flee(dt) end,
+    }
     return e
 end
 
 function Enemy:draw()
     love.graphics.push("all")
-    if self.state.isPatroling then
-        love.graphics.setColor({1, 1, 1})
-    elseif self.state.isChasing then
-        love.graphics.setColor({1, 1, 0.7})
-    elseif self.state.isFiring then
-        love.graphics.setColor({1, 0.7, 0.7})
-    elseif self.state.isFleeing then
-        love.graphics.setColor({0.7, 0.7, 1})
-    end
+    love.graphics.setColor(self.color)
     love.graphics.draw(self.body.sprite, self.body.position.x, self.body.position.y, self.body.angle, self.size, self.size, self.body.origin.x, self.body.origin.y)
     love.graphics.pop()
     self:drawHealth()
@@ -245,11 +244,22 @@ function Enemy:draw()
 end
 
 function Enemy:update(dt)
+    if self.state == "patroling" then
+        self.color = {1, 1, 1, 1}
+    elseif self.state == "chasing" then
+        self.color = {1, 1, .7, 1}
+    elseif self.state == "firing" then
+        self.color = {1, .7, .7, 1}
+    elseif self.state == "fleeing" then
+        self.color = {.7, .7, 1, 1}
+    end
     self.projectileTimer = self.projectileTimer + dt
     self.canon.tip.x = self.body.position.x + math.cos(self.body.angle) * self.canon.length
     self.canon.tip.y = self.body.position.y + math.sin(self.body.angle) * self.canon.length
     self:updateState()
-    self:behave(dt)
+    if self.states[self.state] then
+        self.states[self.state](dt)
+    end
     return self.hp.current == 0
 end
 
@@ -260,45 +270,13 @@ function Enemy:updateState()
     local dY = pY - self.body.position.y
     local squaredDist = dX * dX + dY * dY
     if squaredDist >= 600 * 600 then
-        self.state = {
-            isPatroling = true,
-            isChasing = false,
-            isFiring = false,
-            isFleeing = false
-        }
+        self.state = "patroling"
     elseif squaredDist < 600 * 600 and squaredDist >= 400 * 400 then
-        self.state = {
-            isPatroling = false,
-            isChasing = true,
-            isFiring = false,
-            isFleeing = false
-        }
+        self.state = "chasing"
     elseif squaredDist < 400 * 400 and squaredDist >= 200 * 200 then
-        self.state = {
-            isPatroling = false,
-            isChasing = false,
-            isFiring = true,
-            isFleeing = false
-        }
+        self.state = "firing"
     elseif squaredDist < 200 * 200 then
-        self.state = {
-            isPatroling = false,
-            isChasing = false,
-            isFiring = false,
-            isFleeing = true
-        }
-    end
-end
-
-function Enemy:behave(dt)
-    if self.state.isPatroling then
-        self:patrol(dt)
-    elseif self.state.isChasing then
-        self:chase(dt)
-    elseif self.state.isFiring then
-        self:fire(dt)
-    elseif self.state.isFleeing then
-        self:flee(dt)
+        self.state = "fleeing"
     end
 end
 
