@@ -1,9 +1,9 @@
 Entity = require "entity"
 Player = Entity.Player
 Enemy = Entity.Enemy
-local Menu = require "menu"
-local GameOver = require "gameOver"
-local Pause = require "pause"
+local Menu = require "scenes/menu"
+local GameOver = require "scenes/gameOver"
+local Pause = require "scenes/pause"
 require "Projectile"
 
 player = nil
