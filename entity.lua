@@ -1,10 +1,9 @@
 local hitboxChecker = require "utils/hitboxChecker"
+local Projectile = require "projectile"
 
 local Entity = {}
 Entity.__index = Entity
 
-local bigP_treshold = 0.3
-local smallP_treshold = 0.1
 local currentIndexTurret = 1
 
 local angleComparisonTreshold = 0.01
@@ -21,70 +20,30 @@ function Entity:create(x, y, type)
     e.speedMove = 200
     e.speedRotate = 5
     e.size = 1
-    e.deltaB = 0
-    e.deltaS = 0
-    e.canon = {
-        length = 39,
-        tip = {}
-    }
-    e.smallProjectiles = {}
-    e.bigProjectiles = {}
+    e.projectileTimer = 0
     setmetatable(e, Entity)
     return e
 end
 
-function Entity:updateProjectiles(entity, dt)
-    if self.bigProjectiles then
-        for n = #self.bigProjectiles, 1, -1 do
-            if Projectile.update(entity, self.bigProjectiles[n], dt) then
-                table.remove(self.bigProjectiles, n)
-            end
-        end
+function Entity:newProjectile(projectileIndex, dt)
+    local projectileX, projectileY, projectileAngle
+
+    if projectileIndex == 1 then
+        projectileX = self.canon.tip.x
+        projectileY = self.canon.tip.y
+        projectileAngle = self.body.angle
+    elseif projectileIndex == 2 then
+        projectileX = self.turret.positions[self.currentIndexTurret].x
+        projectileY = self.turret.positions[self.currentIndexTurret].y
+        projectileAngle = self.turret.angle
+        self.currentIndexTurret = 3 - self.currentIndexTurret
+    else
+        return
     end
 
-    if self.smallProjectiles then
-        for n = #self.smallProjectiles, 1, -1 do
-            if Projectile.update(entity, self.smallProjectiles[n], dt) then
-                table.remove(self.smallProjectiles, n)
-            end
-        end
-    end
-end
-
-function Entity:drawProjectiles()
-    if self.bigProjectiles then
-        for n = #self.bigProjectiles, 1, -1 do
-            Projectile.draw(self.bigProjectiles[n])
-        end
-    end
-
-    if self.smallProjectiles then
-        for n = #self.smallProjectiles, 1, -1 do
-            Projectile.draw(self.smallProjectiles[n])
-        end
-    end
-end
-
-function Entity:addBigProjectile(projectile, dt)
-    projectile.position.x = self.canon.tip.x
-    projectile.position.y = self.canon.tip.y
-    projectile.angle = self.body.angle
-    self.deltaB = self.deltaB + dt
-    if self.deltaB > bigP_treshold or #self.bigProjectiles == 0 then
-        table.insert(self.bigProjectiles, projectile)
-        self.deltaB = 0
-    end
-end
-
-function Entity:addSmallProjectile(projectile, dt)
-    self.deltaS = self.deltaS + dt
-    if self.deltaS > smallP_treshold or #self.smallProjectiles == 0 then
-        projectile.position.x = self.turret.positions[currentIndexTurret].x
-        projectile.position.y = self.turret.positions[currentIndexTurret].y
-        projectile.angle = self.turret.angle
-        table.insert(self.smallProjectiles, projectile)
-        self.deltaS = 0
-        currentIndexTurret = 3 - currentIndexTurret
+    if self.projectileTimer > self.projectileTimerTreshold then
+        Projectile:create(projectileIndex, projectileX, projectileY, projectileAngle)
+        self.projectileTimer = 0
     end
 end
 
@@ -157,10 +116,12 @@ function Player:create()
     p.turret = {}
     p.turret.sprite = love.graphics.newImage("__images__/shark_turret.png")
     p.turret.angle = 0
+    p.projectileTimerTreshold = 0.1
     p.hp = {
         max = 100,
         current = 100
     }
+    p.currentIndexTurret = 1
     p.turret.origin = {
         x = p.turret.sprite:getWidth() / 2,
         y = p.turret.sprite:getHeight() / 2
@@ -185,12 +146,10 @@ function Player:reset()
     self.body.angle = 0
 end
 
-function Player:update(enemies, dt)
-    self.canon.tip.x = self.body.position.x + math.cos(self.body.angle) * self.canon.length
-    self.canon.tip.y = self.body.position.y + math.sin(self.body.angle) * self.canon.length
+function Player:update(dt)
+    self.projectileTimer = self.projectileTimer + dt
     self:handleInputs(dt)
     self:updateTurret()
-    self:updateProjectiles(enemies, dt)
     if self.hp.current == 0 then
         scene = "gameover"
     end
@@ -210,7 +169,7 @@ function Player:handleInputs(dt)
     end
 
     if love.mouse.isDown(1) then
-        self:addSmallProjectile(Projectile:create(2), dt)
+        self:newProjectile(2, dt)
     end
 end
 
@@ -233,13 +192,7 @@ function Player:draw()
             love.graphics.draw(self.turret.sprite, self.turret.positions[n].x, self.turret.positions[n].y, self.turret.angle, self.size, self.size, self.turret.origin.x, self.turret.origin.y)
         end
     end
-    self:drawProjectiles()
     self:drawHealth()
-    local startHitboxX = self.body.position.x - self.body.sprite:getWidth() * .5
-    local startHitboxY = self.body.position.y - self.body.sprite:getHeight() * .5
-    --love.graphics.circle("line", self.body.position.x, self.body.position.y, 200)
-    --love.graphics.circle("line", self.body.position.x, self.body.position.y, 400)
-    --love.graphics.circle("line", self.body.position.x, self.body.position.y, 600)
     self:drawHitbox()
 end
 
@@ -262,6 +215,11 @@ function Enemy:create(x, y)
         currentTime = 0,
         turnDirection = 1
     }
+    e.projectileTimerTreshold = 0.3
+    e.canon = {
+        length = 39,
+        tip = {}
+    }
     e.speedMove = 50
     e.speedRotate = 2
     e.state = {isPatroling = true, isChasing = false, isFiring = false, isFleeing = false}
@@ -282,21 +240,20 @@ function Enemy:draw()
     end
     love.graphics.draw(self.body.sprite, self.body.position.x, self.body.position.y, self.body.angle, self.size, self.size, self.body.origin.x, self.body.origin.y)
     love.graphics.pop()
-    self:drawProjectiles()
     self:drawHealth()
     --self:drawHitbox()
 end
 
-function Enemy:update(player, dt)
+function Enemy:update(dt)
+    self.projectileTimer = self.projectileTimer + dt
     self.canon.tip.x = self.body.position.x + math.cos(self.body.angle) * self.canon.length
     self.canon.tip.y = self.body.position.y + math.sin(self.body.angle) * self.canon.length
-    self:updateState(player, dt)
-    self:behave(player, dt)
-    self:updateProjectiles(player, dt)
+    self:updateState()
+    self:behave(dt)
     return self.hp.current == 0
 end
 
-function Enemy:updateState(player, dt)
+function Enemy:updateState()
     local pX = player.body.position.x
     local pY = player.body.position.y
     local dX = pX - self.body.position.x
@@ -333,15 +290,15 @@ function Enemy:updateState(player, dt)
     end
 end
 
-function Enemy:behave(player, dt)
+function Enemy:behave(dt)
     if self.state.isPatroling then
         self:patrol(dt)
     elseif self.state.isChasing then
-        self:chase(player, dt)
+        self:chase(dt)
     elseif self.state.isFiring then
-        self:fire(player, dt)
+        self:fire(dt)
     elseif self.state.isFleeing then
-        self:flee(player, dt)
+        self:flee(dt)
     end
 end
 
@@ -364,7 +321,7 @@ function Enemy:patrol(dt)
     end
 end
 
-function Enemy:chase(player, dt)
+function Enemy:chase(dt)
     local pX = player.body.position.x
     local pY = player.body.position.y
     local dX = pX - self.body.position.x
@@ -381,17 +338,17 @@ function Enemy:chase(player, dt)
     self:move(dt, 1)
 end
 
-function Enemy:fire(player, dt)
+function Enemy:fire(dt)
     local pX = player.body.position.x
     local pY = player.body.position.y
     local dX = pX - self.body.position.x
     local dY = pY - self.body.position.y
     local squaredDist = dX * dX + dY * dY
     self.body.angle = math.atan2(dY, dX)
-    self:addBigProjectile(Projectile:create(1), dt)
+    self:newProjectile(1, dt)
 end
 
-function Enemy:flee(player, dt)
+function Enemy:flee(dt)
     local pX = player.body.position.x
     local pY = player.body.position.y
     local dX = pX - self.body.position.x

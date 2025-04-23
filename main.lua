@@ -4,7 +4,7 @@ Enemy = Entity.Enemy
 local Menu = require "scenes/menu"
 local GameOver = require "scenes/gameOver"
 local Pause = require "scenes/pause"
-require "Projectile"
+local Projectile = require "projectile"
 
 player = nil
 enemies = {}
@@ -26,12 +26,13 @@ function love.update(dt)
     if scene == "menu" then
         Menu.update(dt)
     elseif scene == "game" then
-        player:update(enemies, dt)
+        player:update(dt)
         for n = #enemies, 1, -1 do
-            if enemies[n]:update(player, dt) then
+            if enemies[n]:update(dt) then
                 table.remove(enemies, n)
             end
         end
+        Projectile:update(dt)
     elseif scene == "gameover" then
         GameOver.update(dt)
     elseif scene == "pause" then
@@ -47,6 +48,7 @@ function love.draw()
         for n = 1, #enemies do
             enemies[n]:draw()
         end
+        Projectile:draw()
     elseif scene == "gameover" then
         GameOver.draw()
     elseif scene == "pause" then
