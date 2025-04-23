@@ -1,4 +1,4 @@
-local hitbox = {}
+local hitboxChecker = {}
 
 --[[   HITBOX Checker
     check if a given point is in a given paralelogram
@@ -11,7 +11,7 @@ local hitbox = {}
         example : paralelogram = { {x = ..., y = ...}, ...} so we can loop on the 4 corners
     The 4 corners are defined clockwise (example : top left -> top right -> bottom right -> bottom left)
 ]]
-function hitbox.isIn(point, paralelogram)
+function hitboxChecker.isIn(point, paralelogram)
     if #paralelogram < 3 then
         return false
     end
@@ -46,4 +46,31 @@ function hitbox.isIn(point, paralelogram)
     return true -- Tous les produits vectoriels ont le même signe : on est à l'intérieur du rectangle
 end
 
-return hitbox
+function hitboxChecker.getHitbox(center, angle, width, height)
+    local hitbox = {
+        {
+            x = center.x - math.cos(angle) * (width + 2) + math.cos(angle - math.pi * .5) * height,
+            y = center.y - math.sin(angle) * (width + 2) + math.sin(angle - math.pi * .5) * height
+        },
+        {
+            x = center.x + math.cos(angle) * (width - 2) + math.cos(angle - math.pi * .5) * height,
+            y = center.y + math.sin(angle) * (width - 2) + math.sin(angle - math.pi * .5) * height
+        },
+        {
+            x = center.x + math.cos(angle) * (width - 2) + math.cos(angle + math.pi * .5) * height,
+            y = center.y + math.sin(angle) * (width - 2) + math.sin(angle + math.pi * .5) * height
+        },
+        {
+            x = center.x - math.cos(angle) * (width + 2) + math.cos(angle + math.pi * .5) * height,
+            y = center.y - math.sin(angle) * (width + 2) + math.sin(angle + math.pi * .5) * height
+        }
+    }
+    return hitbox
+end
+
+function hitboxChecker.drawHitbox(center, angle, width, height)
+    local hitbox = hitboxChecker.getHitbox(center, angle, width, height)
+    love.graphics.polygon("line", hitbox[1].x, hitbox[1].y, hitbox[2].x, hitbox[2].y, hitbox[3].x, hitbox[3].y, hitbox[4].x, hitbox[4].y)
+end
+
+return hitboxChecker

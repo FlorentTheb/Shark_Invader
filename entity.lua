@@ -119,27 +119,12 @@ function Entity:turnLeft(dt)
 end
 
 function Entity:isPointInHitbox(x, y)
-    -- On va check si le point est du même côté des 4 segments de la hitbox (produit vectoriel)
-    local hitbox = {
-        {
-            x = self.body.position.x - math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.cos(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5,
-            y = self.body.position.y - math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.sin(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5
-        },
-        {
-            x = self.body.position.x + math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.cos(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5,
-            y = self.body.position.y + math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.sin(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5
-        },
-        {
-            x = self.body.position.x + math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.cos(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5,
-            y = self.body.position.y + math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.sin(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5
-        },
-        {
-            x = self.body.position.x - math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.cos(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5,
-            y = self.body.position.y - math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.sin(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5
-        }
-    }
-
+    local hitbox = hitboxChecker.getHitbox(self.body.position, self.body.angle, self.body.sprite:getWidth() * .5, self.body.sprite:getHeight() * .5)
     return hitboxChecker.isIn({x = x, y = y}, hitbox)
+end
+
+function Entity:drawHitbox()
+    hitboxChecker.drawHitbox(self.body.position, self.body.angle, self.body.sprite:getWidth() * .5, self.body.sprite:getHeight() * .5)
 end
 
 function Entity:drawHealth()
@@ -159,29 +144,6 @@ function Entity:drawHealth()
     love.graphics.rectangle("line", startRemainingHealthX, startRemainingHealthY, widthHealthBar, heightHealthBar)
 
     love.graphics.pop()
-end
-
-function Entity:drawHitbox()
-    local hitbox = {
-        {
-            x = self.body.position.x - math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.cos(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5,
-            y = self.body.position.y - math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.sin(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5
-        },
-        {
-            x = self.body.position.x + math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.cos(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5,
-            y = self.body.position.y + math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.sin(self.body.angle - math.pi * .5) * self.body.sprite:getHeight() * .5
-        },
-        {
-            x = self.body.position.x + math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.cos(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5,
-            y = self.body.position.y + math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 - 2) + math.sin(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5
-        },
-        {
-            x = self.body.position.x - math.cos(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.cos(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5,
-            y = self.body.position.y - math.sin(self.body.angle) * (self.body.sprite:getWidth() * .5 + 2) + math.sin(self.body.angle + math.pi * .5) * self.body.sprite:getHeight() * .5
-        }
-    }
-
-    love.graphics.polygon("line", hitbox[1].x, hitbox[1].y, hitbox[2].x, hitbox[2].y, hitbox[3].x, hitbox[3].y, hitbox[4].x, hitbox[4].y)
 end
 
 local Player = {}
@@ -278,7 +240,7 @@ function Player:draw()
     --love.graphics.circle("line", self.body.position.x, self.body.position.y, 200)
     --love.graphics.circle("line", self.body.position.x, self.body.position.y, 400)
     --love.graphics.circle("line", self.body.position.x, self.body.position.y, 600)
-    --self:drawHitbox()
+    self:drawHitbox()
 end
 
 local Enemy = {}
