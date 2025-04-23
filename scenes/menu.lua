@@ -1,5 +1,5 @@
 local menu = {}
-local buttonFactory = require "utils/factoryButton"
+local buttonFactory = require "factory/buttons"
 
 function menu.init()
     menu.font = love.graphics.newFont("__fonts__/bubbles.ttf", 100)
