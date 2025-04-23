@@ -1,3 +1,5 @@
+local hitboxChecker = require "utils/hitboxChecker"
+
 local Entity = {}
 Entity.__index = Entity
 
@@ -137,34 +139,7 @@ function Entity:isPointInHitbox(x, y)
         }
     }
 
-    local refSign  -- signe d'un coté
-
-    for i = 1, #hitbox do
-        local a = hitbox[i]
-        local b = hitbox[(i % 4) + 1]
-
-        local AB = {
-            -- Vecteur du côté que l'on check
-            x = b.x - a.x,
-            y = b.y - a.y
-        }
-        local APoint = {
-            -- Vecteur depuis le coin actuel jusqu'au point à check
-            x = x - a.x,
-            y = y - a.y
-        }
-        local prodVec = AB.x * APoint.y - AB.y * APoint.x
-
-        if i == 1 then
-            refSign = prodVec > 0 and 1 or -1
-        else
-            if (prodVec > 0 and refSign < 0) or (prodVec < 0 and refSign > 0) then
-                return false -- Dès que l'on a un des produits vectoriels différents d'un autre, on sait que l'on sera en dehors de la hitbox
-            end
-        end
-    end
-
-    return true -- Tous les produits vectoriels ont le même signe : on est à l'intérieur du rectangle
+    return hitboxChecker.isIn({x = x, y = y}, hitbox)
 end
 
 function Entity:drawHealth()
