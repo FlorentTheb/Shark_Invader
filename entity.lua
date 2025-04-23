@@ -202,6 +202,7 @@ Enemy.__index = Enemy
 
 function Enemy:create(x, y)
     local e = Entity:create(x, y, "enemy")
+    setmetatable(e, Enemy)
     e.body.sprite = love.graphics.newImage("__images__/enemy.png")
     e.body.origin = {x = e.body.sprite:getWidth() / 2, y = e.body.sprite:getHeight() / 2}
     e.hp = {
@@ -224,8 +225,12 @@ function Enemy:create(x, y)
     e.speedMove = 50
     e.speedRotate = 2
     e.state = "patroling"
-    e.state = {isPatroling = true, isChasing = false, isFiring = false, isFleeing = false}
-    setmetatable(e, Enemy)
+    e.states = {
+        patroling = function(dt) e:patrol(dt) end,
+        chasing   = function(dt) e:chase(dt) end,
+        firing    = function(dt) e:fire(dt) end,
+        fleeing   = function(dt) e:flee(dt) end,
+    }
     return e
 end
 
@@ -252,7 +257,9 @@ function Enemy:update(dt)
     self.canon.tip.x = self.body.position.x + math.cos(self.body.angle) * self.canon.length
     self.canon.tip.y = self.body.position.y + math.sin(self.body.angle) * self.canon.length
     self:updateState()
-    self:behave(dt)
+    if self.states[self.state] then
+        self.states[self.state](dt)
+    end
     return self.hp.current == 0
 end
 
@@ -270,18 +277,6 @@ function Enemy:updateState()
         self.state = "firing"
     elseif squaredDist < 200 * 200 then
         self.state = "fleeing"
-    end
-end
-
-function Enemy:behave(dt)
-    if self.state == "patroling" then
-        self:patrol(dt)
-    elseif self.state == "chasing" then
-        self:chase(dt)
-    elseif self.state == "firing" then
-        self:fire(dt)
-    elseif self.state == "fleeing" then
-        self:flee(dt)
     end
 end
 
