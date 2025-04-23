@@ -8,14 +8,12 @@ function menu.init()
         small = love.graphics.newFont("__fonts__/bubbles.ttf", 25)
     }
     menu.animation = {
-        buttonSpeed = 600,
-        deltaStartTimer = .5,
+        buttonSpeed = 900,
+        deltaStartTimer = .3,
         currentTime = 0
     }
     menu.buttonLabels = {"Play", "Options", "Credits", "Exit"}
     menu.buttons = buttonFactory.createButtonList(menu.buttonLabels, menu.fonts.big, false)
-    local b = buttonFactory.createSingleButton("skip tutorial", menu.fonts.small, 125, 50, 0.5)
-    table.insert(menu.buttons, b)
 end
 
 function menu.update(dt)
