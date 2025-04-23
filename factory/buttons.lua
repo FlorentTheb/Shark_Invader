@@ -23,49 +23,73 @@ local function getMaxWidthLabels(listButtonsLabel, font)
     return maxWidth
 end
 
-local function createButton(indexButton, totalButtons, currentLabel, font, isHorizontal, labelWidth)
+local function createButton(indexButton, totalButtons, currentLabel, font, isHorizontalDisplayed, labelWidth, posX, posY, alpha)
     local button = {}
     button.padding = 20
     button.margin = 20
-    button.width = labelWidth + 2 * button.padding
+    if labelWidth then
+        button.width = labelWidth + 2 * button.padding
+    else
+        button.width = font:getWidth(currentLabel) + 2 * button.padding
+    end
+    local alphaShadow
+    if not alpha then
+        alpha = 1
+        alphaShadow = .3
+    else
+        alphaShadow = 0
+    end
     button.height = font:getHeight() + 2 * button.padding
     button.cornerRatio = 10
     button.shadow = {
         offset = 5,
-        color = {0, 0, 0, .3}
+        color = {0, 0, 0, alphaShadow}
     }
-    button.color = {0, .5, .5, 1}
+    button.color = {0, .5, .5, alpha}
     button.position = {}
-    local xOrigin = love.graphics.getWidth() * .5 - (totalButtons - 1) * ((button.width + button.margin) * .5)
-    local yOrigin = love.graphics.getHeight() * .5 - (totalButtons - 1) * ((button.height + button.margin) * .5)
-    button.position.finale = {
-        x = isHorizontal and xOrigin + (button.width + button.margin) * (indexButton - 1) or love.graphics.getWidth() * .5,
-        y = isHorizontal and love.graphics.getHeight() * .7 or yOrigin + (button.height + button.margin) * (indexButton - 1)
-    }
-    button.position.current = {
-        x = isHorizontal and button.position.finale.x or -button.width,
-        y = isHorizontal and love.graphics.getHeight() + button.height or button.position.finale.y
-    }
-    button.vector = {
-        x = isHorizontal and 0 or 1,
-        y = isHorizontal and -1 or 0
-    }
-    button.state = {isHover = false, isClicked = false}
-    button.label = createLabel(font, currentLabel)
-
-    function button.reset(isHorizontal)
+    if posX and posY then
+        button.position.finale = {
+            x = posX,
+            y = posY
+        }
+        button.position.current = {
+            x = posX,
+            y = posY
+        }
+    else
         local xOrigin = love.graphics.getWidth() * .5 - (totalButtons - 1) * ((button.width + button.margin) * .5)
         local yOrigin = love.graphics.getHeight() * .5 - (totalButtons - 1) * ((button.height + button.margin) * .5)
         button.position.finale = {
-            x = isHorizontal and xOrigin + (button.width + button.margin) * (indexButton - 1) or love.graphics.getWidth() * .5,
-            y = isHorizontal and love.graphics.getHeight() * .7 or yOrigin + (button.height + button.margin) * (indexButton - 1)
+            x = isHorizontalDisplayed and xOrigin + (button.width + button.margin) * (indexButton - 1) or love.graphics.getWidth() * .5,
+            y = isHorizontalDisplayed and love.graphics.getHeight() * .7 or yOrigin + (button.height + button.margin) * (indexButton - 1)
         }
         button.position.current = {
-            x = isHorizontal and button.position.finale.x or -button.width,
-            y = isHorizontal and love.graphics.getHeight() + button.height or button.position.finale.y
+            x = isHorizontalDisplayed and button.position.finale.x or -button.width,
+            y = isHorizontalDisplayed and love.graphics.getHeight() + button.height or button.position.finale.y
         }
-        button.state.isHover = false
-        button.state.isClicked = false
+        button.vector = {
+            x = isHorizontalDisplayed and 0 or 1,
+            y = isHorizontalDisplayed and -1 or 0
+        }
+    end
+    button.state = {isHover = false, isClicked = false}
+    button.label = createLabel(font, currentLabel)
+
+    function button.reset(isHorizontalDisplayed)
+        if not posX or not posY then
+            local xOrigin = love.graphics.getWidth() * .5 - (totalButtons - 1) * ((button.width + button.margin) * .5)
+            local yOrigin = love.graphics.getHeight() * .5 - (totalButtons - 1) * ((button.height + button.margin) * .5)
+            button.position.finale = {
+                x = isHorizontalDisplayed and xOrigin + (button.width + button.margin) * (indexButton - 1) or love.graphics.getWidth() * .5,
+                y = isHorizontalDisplayed and love.graphics.getHeight() * .7 or yOrigin + (button.height + button.margin) * (indexButton - 1)
+            }
+            button.position.current = {
+                x = isHorizontalDisplayed and button.position.finale.x or -button.width,
+                y = isHorizontalDisplayed and love.graphics.getHeight() + button.height or button.position.finale.y
+            }
+            button.state.isHover = false
+            button.state.isClicked = false
+        end
     end
 
     function button.isClicked()
@@ -115,10 +139,10 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
         end
 
         if button.isMouseIn() then
-            button.color = {0, .7, .7, 1}
+            button.color = {0, .7, .7, alpha}
             button.state.isHover = true
         else
-            button.color = {0, .5, .5, 1}
+            button.color = {0, .5, .5, alpha}
             button.state.isHover = false
         end
     end
@@ -147,16 +171,20 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
     return button
 end
 
-function ButtonFactoryModule.createButtonList(listButtonsLabel, font, isHorizontal)
+function ButtonFactoryModule.createButtonList(listButtonsLabel, font, isHorizontalDisplayed)
     local listButton = {}
     local labelWidth = getMaxWidthLabels(listButtonsLabel, font)
     for n = 1, #listButtonsLabel do
-        local button = createButton(n, #listButtonsLabel, listButtonsLabel[n], font, isHorizontal, labelWidth)
+        local button = createButton(n, #listButtonsLabel, listButtonsLabel[n], font, isHorizontalDisplayed, labelWidth)
 
         table.insert(listButton, button)
     end
 
     return listButton
+end
+
+function ButtonFactoryModule.createSingleButton(label, font, posX, posY, alpha)
+    return createButton(nil, nil, label, font, nil, nil, posX, posY, alpha)
 end
 
 return ButtonFactoryModule

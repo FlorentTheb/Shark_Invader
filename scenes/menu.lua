@@ -2,14 +2,20 @@ local menu = {}
 local buttonFactory = require "factory/buttons"
 
 function menu.init()
-    menu.font = love.graphics.newFont("__fonts__/bubbles.ttf", 100)
+    menu.fonts = {
+        big = love.graphics.newFont("__fonts__/bubbles.ttf", 100),
+        medium = love.graphics.newFont("__fonts__/bubbles.ttf", 50),
+        small = love.graphics.newFont("__fonts__/bubbles.ttf", 25)
+    }
     menu.animation = {
         buttonSpeed = 600,
         deltaStartTimer = .5,
         currentTime = 0
     }
     menu.buttonLabels = {"Play", "Options", "Credits", "Exit"}
-    menu.buttons = buttonFactory.createButtonList(menu.buttonLabels, menu.font, false)
+    menu.buttons = buttonFactory.createButtonList(menu.buttonLabels, menu.fonts.big, false)
+    local b = buttonFactory.createSingleButton("skip tutorial", menu.fonts.small, 125, 50, 0.5)
+    table.insert(menu.buttons, b)
 end
 
 function menu.update(dt)
