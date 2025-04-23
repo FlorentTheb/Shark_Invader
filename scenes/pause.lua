@@ -1,5 +1,5 @@
 local pause = {}
-local buttonFactory = require "utils/factoryButton"
+local buttonFactory = require "factory/buttons"
 
 function pause.init()
     pause.font = love.graphics.newFont("__fonts__/bubbles.ttf", 100)
