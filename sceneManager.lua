@@ -28,7 +28,11 @@ function SceneManager:update(dt)
     elseif self.currentScene == "pause" then
         Pause.update(dt)
     elseif self.currentScene == "tutorial" then
-        Tutorial.update(dt)
+        if Tutorial.update(dt) == "game" then
+            self.currentScene = "game"
+            Tutorial.reset()
+            Game.loadLevel(Tutorial.player)
+        end
     end
 end
 
