@@ -1,4 +1,4 @@
-require "sceneManager"
+local SceneManager = require "sceneManager"
 
 function love.load()
     math.randomseed(os.time())
