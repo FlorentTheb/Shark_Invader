@@ -69,17 +69,15 @@ function gameover.checkMouseRelease()
             if gameover.buttons[n].label.text == "Restart" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
                 gameover.reset()
-                scene = "game"
-                player:reset()
-                enemies = {}
-                table.insert(enemies, Enemy:create(50, 50))
+                return "game"
             elseif gameover.buttons[n].label.text == "Menu" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
                 gameover.reset()
-                scene = "menu"
+                return "menu"
             end
         end
     end
+    return "gameover"
 end
 
 return gameover

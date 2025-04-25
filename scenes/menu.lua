@@ -59,15 +59,13 @@ function menu.checkMouseRelease()
             if menu.buttons[n].label.text == "Play" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
                 menu.reset()
-                scene = "game"
-                player:reset()
-                enemies = {}
-                table.insert(enemies, Enemy:create(50, 50))
+                return "game"
             elseif menu.buttons[n].label.text == "Exit" then
                 love.event.quit()
             end
         end
     end
+    return "menu"
 end
 
 return menu

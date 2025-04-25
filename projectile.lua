@@ -30,7 +30,7 @@ function Projectile:create(index, x, y, angle)
         p.position.y = p.position.y + math.sin(p.angle) * p.speed * dt
     end
 
-    function p.isHittingEntity()
+    function p.isHittingEntity(player, enemies)
         if p.index == 1 then -- Big projectile, check the player hitbox
             if player:isPointInHitbox(p.position.x, p.position.y) then
                 if player.hp.current > 0 then
@@ -73,12 +73,12 @@ function Projectile:create(index, x, y, angle)
     table.insert(self.projectilesTable, p)
 end
 
-function Projectile:update(dt)
+function Projectile:update(player, enemies, dt)
     if #self.projectilesTable > 0 then
         for n = #self.projectilesTable, 1, -1 do
             local projectile = self.projectilesTable[n]
             projectile.updatePosition(dt)
-            if projectile.isHittingEntity() or projectile.isOut() then
+            if projectile.isHittingEntity(player, enemies) or projectile.isOut() then
                 table.remove(self.projectilesTable, n)
             end
         end
@@ -91,6 +91,10 @@ function Projectile:draw()
             self.projectilesTable[n].draw()
         end
     end
+end
+
+function Projectile:reset()
+    self.projectilesTable = {}
 end
 
 return Projectile
