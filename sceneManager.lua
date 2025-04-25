@@ -4,7 +4,7 @@ local Pause = require "scenes/pause"
 local Tutorial = require "scenes/tutorial"
 local Game = require "scenes/game"
 
-SceneManager = {}
+local SceneManager = {}
 
 function SceneManager:init()
     self.currentScene = "menu"
@@ -27,7 +27,7 @@ function SceneManager:update(dt)
         GameOver.update(dt)
     elseif self.currentScene == "pause" then
         Pause.update(dt)
-    elseif self.currentScene == "tuorial" then
+    elseif self.currentScene == "tutorial" then
         Tutorial.update(dt)
     end
 end
@@ -41,8 +41,8 @@ function SceneManager:draw(dt)
         GameOver.draw(dt)
     elseif self.currentScene == "pause" then
         Pause.draw(dt)
-    elseif self.currentScene == "tuorial" then
-        Tutorial.draw(dt)
+    elseif self.currentScene == "tutorial" then
+        Tutorial.draw()
     end
 end
 
@@ -53,15 +53,14 @@ function SceneManager:handleMousePressed(_, _, button)
         GameOver.checkMousePressed()
     elseif self.currentScene == "pause" and button == 1 then
         Pause.checkMousePressed()
+    elseif self.currentScene == "tutorial" and button == 1 then
+        Tutorial.checkMousePressed()
     end
 end
 
 function SceneManager:handleMouseReleased(_, _, button)
     if self.currentScene == "menu" and button == 1 then
         self.currentScene = Menu.checkMouseRelease()
-        if self.currentScene == "game" then
-            Game.loadLevel()
-        end
     elseif self.currentScene == "gameover" and button == 1 then
         self.currentScene = GameOver.checkMouseRelease()
         if self.currentScene == "game" then
@@ -72,6 +71,11 @@ function SceneManager:handleMouseReleased(_, _, button)
         if self.currentScene == "menu" then
             Game.reset()
         end
+    elseif self.currentScene == "tutorial" and button == 1 then
+        self.currentScene = Tutorial.checkMouseRelease()
+        if self.currentScene == "game" then
+            Game.loadLevel()
+        end
     end
 end
 
@@ -80,3 +84,5 @@ function SceneManager:handleKeyPressed(key)
         self.currentScene = "pause"
     end
 end
+
+return SceneManager

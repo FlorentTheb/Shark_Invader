@@ -59,7 +59,7 @@ function Menu.checkMouseRelease()
             if Menu.buttons[n].label.text == "Play" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
                 Menu.reset()
-                return "game"
+                return "tutorial"
             elseif Menu.buttons[n].label.text == "Exit" then
                 love.event.quit()
             end
