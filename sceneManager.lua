@@ -3,6 +3,7 @@ local GameOver = require "scenes/gameOver"
 local Pause = require "scenes/pause"
 local Tutorial = require "scenes/tutorial"
 local Game = require "scenes/game"
+local NextLevel = require "utils/nextLevel"
 
 local SceneManager = {}
 
@@ -13,6 +14,7 @@ function SceneManager:init()
     Pause.init()
     Tutorial.init()
     Game.init()
+    NextLevel.init()
 end
 
 function SceneManager:update(dt)

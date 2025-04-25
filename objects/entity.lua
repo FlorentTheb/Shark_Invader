@@ -188,7 +188,6 @@ function Player:draw()
             love.graphics.draw(self.turret.sprite, self.turret.positions[n].x, self.turret.positions[n].y, self.turret.angle, self.size, self.size, self.turret.origin.x, self.turret.origin.y)
         end
     end
-    self:drawHealth()
 end
 
 local Enemy = {}
