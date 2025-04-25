@@ -21,6 +21,7 @@ end
 
 function Game.update(dt)
     Game.player:update(dt)
+    Game.player:handleInputs(dt)
     if Game.player.hp.current == 0 then
         return "over"
     end
@@ -42,7 +43,10 @@ function Game.draw()
     Projectile:draw()
 end
 
-function Game.loadLevel()
+function Game.loadLevel(player)
+    if player then
+        Game.player = player
+    end
     if Game.currentLevel == 1 then
         table.insert(Game.enemies, Enemy:create(50, 50))
     end

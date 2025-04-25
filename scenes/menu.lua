@@ -3,8 +3,8 @@ local buttonFactory = require "factory/buttons"
 
 function Menu.init()
     Menu.fonts = {
-        big = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 100),
-        medium = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 50)
+        big = love.graphics.newFont("assets/__fonts__/secret_thief.otf", 100),
+        medium = love.graphics.newFont("assets/__fonts__/secret_thief.otf", 50)
     }
     Menu.animation = {
         buttonSpeed = 900,
@@ -59,7 +59,7 @@ function Menu.checkMouseRelease()
             if Menu.buttons[n].label.text == "Play" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
                 Menu.reset()
-                return "game"
+                return "tutorial"
             elseif Menu.buttons[n].label.text == "Exit" then
                 love.event.quit()
             end

@@ -3,8 +3,8 @@ local buttonFactory = require "factory/buttons"
 
 function Pause.init()
     Pause.fonts = {
-        giant = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 200),
-        big = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 100)
+        giant = love.graphics.newFont("assets/__fonts__/gloomie_saturday.otf", 200),
+        small = love.graphics.newFont("assets/__fonts__/secret_thief.otf", 50)
     }
     Pause.text = "Pause"
     Pause.size = {
@@ -16,8 +16,8 @@ function Pause.init()
         deltaStartTimer = .3,
         currentTime = 0
     }
-    Pause.buttonLabels = {"Resume", "Menu"}
-    Pause.buttons = buttonFactory.createButtonList(Pause.buttonLabels, Pause.fonts.big, true)
+    Pause.buttonLabels = {"Resume", "Options", "Menu"}
+    Pause.buttons = buttonFactory.createButtonList(Pause.buttonLabels, Pause.fonts.small, true)
 end
 
 function Pause.update(dt)
