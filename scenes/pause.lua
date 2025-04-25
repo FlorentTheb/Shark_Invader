@@ -3,10 +3,8 @@ local buttonFactory = require "factory/buttons"
 
 function pause.init()
     pause.fonts = {
-        giant = love.graphics.newFont("__fonts__/bubbles.ttf", 200),
-        big = love.graphics.newFont("__fonts__/bubbles.ttf", 100),
-        medium = love.graphics.newFont("__fonts__/bubbles.ttf", 50),
-        small = love.graphics.newFont("__fonts__/bubbles.ttf", 25)
+        giant = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 200),
+        big = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 100)
     }
     pause.text = "Pause"
     pause.size = {

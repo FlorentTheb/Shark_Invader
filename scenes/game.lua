@@ -1,7 +1,7 @@
-local Entity = require "entity"
+local Entity = require "objects/entity"
 local Player = Entity.Player
 local Enemy = Entity.Enemy
-local Projectile = require "projectile"
+local Projectile = require "objects/projectile"
 
 local Game = {}
 

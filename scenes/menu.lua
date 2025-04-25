@@ -3,9 +3,8 @@ local buttonFactory = require "factory/buttons"
 
 function menu.init()
     menu.fonts = {
-        big = love.graphics.newFont("__fonts__/bubbles.ttf", 100),
-        medium = love.graphics.newFont("__fonts__/bubbles.ttf", 50),
-        small = love.graphics.newFont("__fonts__/bubbles.ttf", 25)
+        big = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 100),
+        medium = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 50)
     }
     menu.animation = {
         buttonSpeed = 900,
