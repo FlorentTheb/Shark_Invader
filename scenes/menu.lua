@@ -24,6 +24,7 @@ function Menu.update(dt)
             hasToStart = true
         end
         Menu.buttons[n].update(hasToStart, Menu.animation.buttonSpeed, dt)
+
         isButtonHover = isButtonHover or Menu.buttons[n].state.isHover
         if isButtonHover then
             love.mouse.setCursor(love.mouse.getSystemCursor("hand"))

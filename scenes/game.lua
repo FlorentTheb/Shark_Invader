@@ -9,7 +9,7 @@ function Game.init()
     Game.currentLevel = 1
     Game.player = Player:create()
     Game.enemies = {}
-    Projectile:init()
+    Projectile:init() -- Module handle itself (its table) already so no need to store
 end
 
 function Game.reset()
@@ -25,7 +25,8 @@ function Game.update(dt)
         return "over"
     end
     for n = #Game.enemies, 1, -1 do
-        if Game.enemies[n]:update(Game.player, dt) then
+        Game.enemies[n]:update(Game.player, dt)
+        if Game.enemies[n].hp.current == 0 then
             table.remove(Game.enemies, n)
         end
     end
