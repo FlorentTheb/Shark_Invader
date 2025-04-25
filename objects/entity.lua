@@ -4,10 +4,6 @@ local Projectile = require "objects/projectile"
 local Entity = {}
 Entity.__index = Entity
 
-local currentIndexTurret = 1
-
-local angleComparisonTreshold = 0.01
-
 function Entity:create(x, y, type)
     local e = {}
     e.type = type
@@ -107,7 +103,6 @@ end
 
 local Player = {}
 setmetatable(Player, {__index = Entity})
-Player.__index = Player
 
 function Player:create()
     local p = Entity:create(love.graphics.getWidth() * .5, love.graphics.getHeight() * .5, "player")
@@ -134,7 +129,7 @@ function Player:create()
         {x = p.body.position.x, y = p.body.position.y},
         {x = p.body.position.x, y = p.body.position.y}
     }
-    setmetatable(p, Player)
+    setmetatable(p, {__index = Player})
     return p
 end
 
@@ -192,11 +187,9 @@ end
 
 local Enemy = {}
 setmetatable(Enemy, {__index = Entity})
-Enemy.__index = Enemy
 
 function Enemy:create(x, y)
     local e = Entity:create(x, y, "enemy")
-    setmetatable(e, Enemy)
     e.body.sprite = love.graphics.newImage("assets/__images__/enemy.png")
     e.body.origin = {x = e.body.sprite:getWidth() / 2, y = e.body.sprite:getHeight() / 2}
     e.hp = {
@@ -211,6 +204,7 @@ function Enemy:create(x, y)
         turnDirection = 1
     }
     e.color = {1, 1, 1, 1}
+    e.angleComparisonTreshold = 0.01
     e.projectileTimerTreshold = 0.3
     e.canon = {
         length = 39,
@@ -233,6 +227,8 @@ function Enemy:create(x, y)
             e:flee(player, dt)
         end
     }
+
+    setmetatable(e, {__index = Enemy})
     return e
 end
 
@@ -306,7 +302,7 @@ function Enemy:chase(player, dt)
     local dY = pY - self.body.position.y
     local angleTarget = (math.atan2(dY, dX)) % (2 * math.pi)
     local diff = (angleTarget - self.body.angle + math.pi) % (2 * math.pi) - math.pi
-    if math.abs(diff) > angleComparisonTreshold then
+    if math.abs(diff) > self.angleComparisonTreshold then
         if diff > 0 then
             self:turnRight(dt)
         else
