@@ -148,7 +148,6 @@ end
 
 function Player:update(dt)
     self.projectileTimer = self.projectileTimer + dt
-    self:handleInputs(dt)
     self:updateTurret()
 end
 
