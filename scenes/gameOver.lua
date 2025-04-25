@@ -3,8 +3,8 @@ local buttonFactory = require "factory/buttons"
 
 function Gameover.init()
     Gameover.fonts = {
-        giant = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 200),
-        big = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 100)
+        giant = love.graphics.newFont("assets/__fonts__/gloomie_saturday.otf", 200),
+        small = love.graphics.newFont("assets/__fonts__/secret_thief.otf", 50)
     }
     Gameover.text = "Game Over"
     Gameover.size = {
@@ -17,7 +17,7 @@ function Gameover.init()
         currentTime = 0
     }
     Gameover.buttonLabels = {"Restart", "Menu"}
-    Gameover.buttons = buttonFactory.createButtonList(Gameover.buttonLabels, Gameover.fonts.big, true)
+    Gameover.buttons = buttonFactory.createButtonList(Gameover.buttonLabels, Gameover.fonts.small, true)
 end
 
 function Gameover.update(dt)
