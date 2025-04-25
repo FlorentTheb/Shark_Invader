@@ -1,5 +1,5 @@
 local hitboxChecker = require "utils/hitboxChecker"
-local Projectile = require "projectile"
+local Projectile = require "objects/projectile"
 
 local Entity = {}
 Entity.__index = Entity
@@ -111,10 +111,10 @@ Player.__index = Player
 
 function Player:create()
     local p = Entity:create(love.graphics.getWidth() * .5, love.graphics.getHeight() * .5, "player")
-    p.body.sprite = love.graphics.newImage("__images__/shark_body.png")
+    p.body.sprite = love.graphics.newImage("assets/__images__/shark_body.png")
     p.body.origin = {x = p.body.sprite:getWidth() / 2 + 2, y = p.body.sprite:getHeight() / 2}
     p.turret = {}
-    p.turret.sprite = love.graphics.newImage("__images__/shark_turret.png")
+    p.turret.sprite = love.graphics.newImage("assets/__images__/shark_turret.png")
     p.turret.angle = 0
     p.projectileTimerTreshold = 0.1
     p.hp = {
@@ -199,7 +199,7 @@ Enemy.__index = Enemy
 function Enemy:create(x, y)
     local e = Entity:create(x, y, "enemy")
     setmetatable(e, Enemy)
-    e.body.sprite = love.graphics.newImage("__images__/enemy.png")
+    e.body.sprite = love.graphics.newImage("assets/__images__/enemy.png")
     e.body.origin = {x = e.body.sprite:getWidth() / 2, y = e.body.sprite:getHeight() / 2}
     e.hp = {
         max = 100,

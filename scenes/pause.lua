@@ -1,37 +1,35 @@
-local pause = {}
+local Pause = {}
 local buttonFactory = require "factory/buttons"
 
-function pause.init()
-    pause.fonts = {
-        giant = love.graphics.newFont("__fonts__/bubbles.ttf", 200),
-        big = love.graphics.newFont("__fonts__/bubbles.ttf", 100),
-        medium = love.graphics.newFont("__fonts__/bubbles.ttf", 50),
-        small = love.graphics.newFont("__fonts__/bubbles.ttf", 25)
+function Pause.init()
+    Pause.fonts = {
+        giant = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 200),
+        big = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 100)
     }
-    pause.text = "Pause"
-    pause.size = {
-        width = pause.fonts.giant:getWidth(pause.text),
-        height = pause.fonts.giant:getHeight()
+    Pause.text = "Pause"
+    Pause.size = {
+        width = Pause.fonts.giant:getWidth(Pause.text),
+        height = Pause.fonts.giant:getHeight()
     }
-    pause.animation = {
+    Pause.animation = {
         buttonSpeed = 900,
         deltaStartTimer = .3,
         currentTime = 0
     }
-    pause.buttonLabels = {"Resume", "Menu"}
-    pause.buttons = buttonFactory.createButtonList(pause.buttonLabels, pause.fonts.big, true)
+    Pause.buttonLabels = {"Resume", "Menu"}
+    Pause.buttons = buttonFactory.createButtonList(Pause.buttonLabels, Pause.fonts.big, true)
 end
 
-function pause.update(dt)
-    pause.animation.currentTime = pause.animation.currentTime + dt
+function Pause.update(dt)
+    Pause.animation.currentTime = Pause.animation.currentTime + dt
     local isButtonHover = false
-    for n = 1, #pause.buttons do
+    for n = 1, #Pause.buttons do
         local hasToStart = false
-        if pause.animation.currentTime > (n - 1) * pause.animation.deltaStartTimer then
+        if Pause.animation.currentTime > (n - 1) * Pause.animation.deltaStartTimer then
             hasToStart = true
         end
-        pause.buttons[n].update(hasToStart, pause.animation.buttonSpeed, dt)
-        isButtonHover = isButtonHover or pause.buttons[n].state.isHover
+        Pause.buttons[n].update(hasToStart, Pause.animation.buttonSpeed, dt)
+        isButtonHover = isButtonHover or Pause.buttons[n].state.isHover
         if isButtonHover then
             love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
         else
@@ -40,39 +38,39 @@ function pause.update(dt)
     end
 end
 
-function pause.draw()
+function Pause.draw()
     love.graphics.push("all")
     love.graphics.setColor({0, 0.32, 0.8, 0.6})
-    love.graphics.printf(pause.text, pause.fonts.giant, love.graphics.getWidth() * .5, love.graphics.getHeight() * .3, pause.size.width, "left", 0, 1, 1, pause.size.width * .5, pause.size.height * .5)
+    love.graphics.printf(Pause.text, Pause.fonts.giant, love.graphics.getWidth() * .5, love.graphics.getHeight() * .3, Pause.size.width, "left", 0, 1, 1, Pause.size.width * .5, Pause.size.height * .5)
     love.graphics.pop()
-    for n = 1, #pause.buttons do
-        pause.buttons[n].draw()
+    for n = 1, #Pause.buttons do
+        Pause.buttons[n].draw()
     end
 end
 
-function pause.checkMousePressed()
-    for n = 1, #pause.buttons do
-        pause.buttons[n].mousePressed()
+function Pause.checkMousePressed()
+    for n = 1, #Pause.buttons do
+        Pause.buttons[n].mousePressed()
     end
 end
 
-function pause.reset()
-    for n = 1, #pause.buttons do
-        pause.buttons[n].reset(true)
+function Pause.reset()
+    for n = 1, #Pause.buttons do
+        Pause.buttons[n].reset(true)
     end
-    pause.animation.currentTime = 0
+    Pause.animation.currentTime = 0
 end
 
-function pause.checkMouseRelease()
-    for n = 1, #pause.buttons do
-        if pause.buttons[n].isClicked() then
-            if pause.buttons[n].label.text == "Resume" then
+function Pause.checkMouseRelease()
+    for n = 1, #Pause.buttons do
+        if Pause.buttons[n].isClicked() then
+            if Pause.buttons[n].label.text == "Resume" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
-                pause.reset()
+                Pause.reset()
                 return "game"
-            elseif pause.buttons[n].label.text == "Menu" then
+            elseif Pause.buttons[n].label.text == "Menu" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
-                pause.reset()
+                Pause.reset()
                 return "menu"
             end
         end
@@ -80,4 +78,4 @@ function pause.checkMouseRelease()
     return "pause"
 end
 
-return pause
+return Pause

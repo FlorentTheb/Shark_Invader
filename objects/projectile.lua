@@ -2,8 +2,8 @@ Projectile = {}
 
 function Projectile:init()
     self.sprites = {
-        big = love.graphics.newImage("__images__/bulle_01.png"),
-        small = love.graphics.newImage("__images__/bulle_02.png")
+        big = love.graphics.newImage("assets/__images__/bulle_01.png"),
+        small = love.graphics.newImage("assets/__images__/bulle_02.png")
     }
     self.projectilesTable = {}
 end

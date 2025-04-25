@@ -9,7 +9,7 @@ function Tutorial.init()
     }
     Tutorial.stepIndex = 1
     Tutorial.isOver = false
-    Tutorial.font = love.graphics.newFont("__fonts__/bubbles.ttf", 50)
+    Tutorial.font = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 50)
 end
 
 function Tutorial:updateStep()

@@ -1,31 +1,30 @@
-local menu = {}
+local Menu = {}
 local buttonFactory = require "factory/buttons"
 
-function menu.init()
-    menu.fonts = {
-        big = love.graphics.newFont("__fonts__/bubbles.ttf", 100),
-        medium = love.graphics.newFont("__fonts__/bubbles.ttf", 50),
-        small = love.graphics.newFont("__fonts__/bubbles.ttf", 25)
+function Menu.init()
+    Menu.fonts = {
+        big = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 100),
+        medium = love.graphics.newFont("assets/__fonts__/bubbles.ttf", 50)
     }
-    menu.animation = {
+    Menu.animation = {
         buttonSpeed = 900,
         deltaStartTimer = .3,
         currentTime = 0
     }
-    menu.buttonLabels = {"Play", "Options", "Credits", "Exit"}
-    menu.buttons = buttonFactory.createButtonList(menu.buttonLabels, menu.fonts.big, false)
+    Menu.buttonLabels = {"Play", "Options", "Credits", "Exit"}
+    Menu.buttons = buttonFactory.createButtonList(Menu.buttonLabels, Menu.fonts.big, false)
 end
 
-function menu.update(dt)
-    menu.animation.currentTime = menu.animation.currentTime + dt
+function Menu.update(dt)
+    Menu.animation.currentTime = Menu.animation.currentTime + dt
     local isButtonHover = false
-    for n = 1, #menu.buttons do
+    for n = 1, #Menu.buttons do
         local hasToStart = false
-        if menu.animation.currentTime > (n - 1) * menu.animation.deltaStartTimer then
+        if Menu.animation.currentTime > (n - 1) * Menu.animation.deltaStartTimer then
             hasToStart = true
         end
-        menu.buttons[n].update(hasToStart, menu.animation.buttonSpeed, dt)
-        isButtonHover = isButtonHover or menu.buttons[n].state.isHover
+        Menu.buttons[n].update(hasToStart, Menu.animation.buttonSpeed, dt)
+        isButtonHover = isButtonHover or Menu.buttons[n].state.isHover
         if isButtonHover then
             love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
         else
@@ -34,33 +33,33 @@ function menu.update(dt)
     end
 end
 
-function menu.draw()
-    for n = 1, #menu.buttons do
-        menu.buttons[n].draw()
+function Menu.draw()
+    for n = 1, #Menu.buttons do
+        Menu.buttons[n].draw()
     end
 end
 
-function menu.checkMousePressed()
-    for n = 1, #menu.buttons do
-        menu.buttons[n].mousePressed()
+function Menu.checkMousePressed()
+    for n = 1, #Menu.buttons do
+        Menu.buttons[n].mousePressed()
     end
 end
 
-function menu.reset()
-    for n = 1, #menu.buttons do
-        menu.buttons[n].reset(false)
+function Menu.reset()
+    for n = 1, #Menu.buttons do
+        Menu.buttons[n].reset(false)
     end
-    menu.animation.currentTime = 0
+    Menu.animation.currentTime = 0
 end
 
-function menu.checkMouseRelease()
-    for n = 1, #menu.buttons do
-        if menu.buttons[n].isClicked() then
-            if menu.buttons[n].label.text == "Play" then
+function Menu.checkMouseRelease()
+    for n = 1, #Menu.buttons do
+        if Menu.buttons[n].isClicked() then
+            if Menu.buttons[n].label.text == "Play" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
-                menu.reset()
+                Menu.reset()
                 return "game"
-            elseif menu.buttons[n].label.text == "Exit" then
+            elseif Menu.buttons[n].label.text == "Exit" then
                 love.event.quit()
             end
         end
@@ -68,4 +67,4 @@ function menu.checkMouseRelease()
     return "menu"
 end
 
-return menu
+return Menu
