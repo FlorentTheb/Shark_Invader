@@ -69,14 +69,15 @@ function pause.checkMouseRelease()
             if pause.buttons[n].label.text == "Resume" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
                 pause.reset()
-                scene = "game"
+                return "game"
             elseif pause.buttons[n].label.text == "Menu" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
                 pause.reset()
-                scene = "menu"
+                return "menu"
             end
         end
     end
+    return "pause"
 end
 
 return pause

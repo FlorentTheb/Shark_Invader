@@ -150,9 +150,6 @@ function Player:update(dt)
     self.projectileTimer = self.projectileTimer + dt
     self:handleInputs(dt)
     self:updateTurret()
-    if self.hp.current == 0 then
-        scene = "gameover"
-    end
 end
 
 function Player:handleInputs(dt)
@@ -225,10 +222,10 @@ function Enemy:create(x, y)
     e.speedRotate = 2
     e.state = "patroling"
     e.states = {
-        patroling = function(dt) e:patrol(dt) end,
-        chasing   = function(dt) e:chase(dt) end,
-        firing    = function(dt) e:fire(dt) end,
-        fleeing   = function(dt) e:flee(dt) end,
+        patroling = function(player, dt) e:patrol(player, dt) end,
+        chasing   = function(player, dt) e:chase(player, dt) end,
+        firing    = function(player, dt) e:fire(player, dt) end,
+        fleeing   = function(player, dt) e:flee(player, dt) end,
     }
     return e
 end
@@ -241,7 +238,7 @@ function Enemy:draw()
     self:drawHealth()
 end
 
-function Enemy:update(dt)
+function Enemy:update(player, dt)
     if self.state == "patroling" then
         self.color = {1, 1, 1, 1}
     elseif self.state == "chasing" then
@@ -254,14 +251,14 @@ function Enemy:update(dt)
     self.projectileTimer = self.projectileTimer + dt
     self.canon.tip.x = self.body.position.x + math.cos(self.body.angle) * self.canon.length
     self.canon.tip.y = self.body.position.y + math.sin(self.body.angle) * self.canon.length
-    self:updateState()
+    self:updateState(player)
     if self.states[self.state] then
-        self.states[self.state](dt)
+        self.states[self.state](player, dt)
     end
     return self.hp.current == 0
 end
 
-function Enemy:updateState()
+function Enemy:updateState(player)
     local pX = player.body.position.x
     local pY = player.body.position.y
     local dX = pX - self.body.position.x
@@ -278,7 +275,7 @@ function Enemy:updateState()
     end
 end
 
-function Enemy:patrol(dt)
+function Enemy:patrol(player, dt)
     if self.patroling.currentTime == 0 then
         self.patroling.isTurning = math.random() > .5
         self.patroling.turnDirection = math.random(2)
@@ -297,7 +294,7 @@ function Enemy:patrol(dt)
     end
 end
 
-function Enemy:chase(dt)
+function Enemy:chase(player, dt)
     local pX = player.body.position.x
     local pY = player.body.position.y
     local dX = pX - self.body.position.x
@@ -314,7 +311,7 @@ function Enemy:chase(dt)
     self:move(dt, 1)
 end
 
-function Enemy:fire(dt)
+function Enemy:fire(player, dt)
     local pX = player.body.position.x
     local pY = player.body.position.y
     local dX = pX - self.body.position.x
@@ -324,7 +321,7 @@ function Enemy:fire(dt)
     self:newProjectile(1, dt)
 end
 
-function Enemy:flee(dt)
+function Enemy:flee(player, dt)
     local pX = player.body.position.x
     local pY = player.body.position.y
     local dX = pX - self.body.position.x
