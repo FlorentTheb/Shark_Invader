@@ -37,6 +37,7 @@ end
 
 function Game.draw()
     Game.player:draw()
+    Game.player:drawHealth()
     for n = #Game.enemies, 1, -1 do
         Game.enemies[n]:draw()
     end

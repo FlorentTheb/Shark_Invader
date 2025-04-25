@@ -78,7 +78,12 @@ function Projectile:update(player, enemies, dt)
         for n = #self.projectilesTable, 1, -1 do
             local projectile = self.projectilesTable[n]
             projectile.updatePosition(dt)
-            if projectile.isHittingEntity(player, enemies) or projectile.isOut() then
+            if player and enemies then
+                if projectile.isHittingEntity(player, enemies) then
+                    table.remove(self.projectilesTable, n)
+                end
+            end
+            if projectile.isOut() then
                 table.remove(self.projectilesTable, n)
             end
         end
