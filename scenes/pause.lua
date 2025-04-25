@@ -29,6 +29,7 @@ function Pause.update(dt)
             hasToStart = true
         end
         Pause.buttons[n].update(hasToStart, Pause.animation.buttonSpeed, dt)
+
         isButtonHover = isButtonHover or Pause.buttons[n].state.isHover
         if isButtonHover then
             love.mouse.setCursor(love.mouse.getSystemCursor("hand"))

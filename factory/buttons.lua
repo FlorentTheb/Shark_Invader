@@ -1,3 +1,14 @@
+--[[   -Buttons- FACTORY
+    This module give several functionalities :
+    - Create a single button at a given coordinate (center of the button), with a given alpha for the transparency
+    - Create multiple buttons aligned with themselves :
+        > A given arg set if the alignement should be horizontal or vertical : 
+            horizontal set the buttons side to side (bottom of screen)
+            vertical set the buttons in a row (middle of the screen)
+        > All buttons of the list will have the same size, which is set according to the longest label
+    - These methods yet need the specific font initially
+]]
+    
 local ButtonFactoryModule = {}
 
 local function createLabel(font, text)
@@ -18,7 +29,7 @@ local function getMaxWidthLabels(listButtonsLabel, font)
     local maxWidth = 0
     for n = 1, #listButtonsLabel do
         local l = listButtonsLabel[n]
-        maxWidth = math.max(maxWidth, math.floor(font:getWidth(l)))
+        maxWidth = math.max(maxWidth, math.floor(font:getWidth(l))) -- Update if the current label is longer than the previous ones
     end
     return maxWidth
 end
@@ -27,7 +38,7 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
     local button = {}
     button.padding = 20
     button.margin = 20
-    if labelWidth then
+    if labelWidth then -- Condition to know if its a simple button or a list that is currently created
         button.width = labelWidth + 2 * button.padding
     else
         button.width = font:getWidth(currentLabel) + 2 * button.padding
@@ -59,6 +70,8 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
     else
         local xOrigin = love.graphics.getWidth() * .5 - (totalButtons - 1) * ((button.width + button.margin) * .5)
         local yOrigin = love.graphics.getHeight() * .5 - (totalButtons - 1) * ((button.height + button.margin) * .5)
+        -- The finale position, the inital position and the direction will depend on where the buttons will be in the end
+
         button.position.finale = {
             x = isHorizontalDisplayed and xOrigin + (button.width + button.margin) * (indexButton - 1) or love.graphics.getWidth() * .5,
             y = isHorizontalDisplayed and love.graphics.getHeight() * .7 or yOrigin + (button.height + button.margin) * (indexButton - 1)
@@ -68,14 +81,14 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
             y = isHorizontalDisplayed and love.graphics.getHeight() + button.height or button.position.finale.y
         }
         button.vector = {
-            x = isHorizontalDisplayed and 0 or 1,
-            y = isHorizontalDisplayed and -1 or 0
+            x = isHorizontalDisplayed and 0 or 1, -- We move X wise only if set as final display vertical (buttons come from left to right)
+            y = isHorizontalDisplayed and -1 or 0 -- We move Y wise only if set as final display horizontal (buttons come from bottom to upper)
         }
     end
     button.state = {isHover = false, isClicked = false}
     button.label = createLabel(font, currentLabel)
 
-    function button.reset(isHorizontalDisplayed)
+    function button.reset(isHorizontalDisplayed) -- Reset the button at its initial location to redo the animation if the scene is restarted
         if not posX or not posY then
             local xOrigin = love.graphics.getWidth() * .5 - (totalButtons - 1) * ((button.width + button.margin) * .5)
             local yOrigin = love.graphics.getHeight() * .5 - (totalButtons - 1) * ((button.height + button.margin) * .5)
@@ -93,7 +106,7 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
     end
 
     function button.isClicked()
-        if button.isMouseIn() and button.state.isClicked then
+        if button.isMouseIn() and button.state.isClicked then -- Confirm with this method that the release of the mouse is on the same button as the click
             return true
         else
             return false
@@ -102,13 +115,13 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
 
     function button.mousePressed()
         if button.isMouseIn() then
-            button.state.isClicked = true
+            button.state.isClicked = true -- Only for the press of mouse button. We wait for the release to process (cf isClicked method)
         else
             button.state.isClicked = false
         end
     end
 
-    function button.isMouseIn()
+    function button.isMouseIn() -- True if mouse is IN button and it has stopped animate (reached its final position)
         local mX, mY = love.mouse.getPosition()
         local rightBorderButton = button.position.current.x + button.width * .5
         local leftBorderButton = button.position.current.x - button.width * .5
@@ -130,7 +143,7 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
         local current = button.position.current
         local finale = button.position.finale
 
-        if (current.x < finale.x or current.y > finale.y) and hasToMove then
+        if (current.x < finale.x or current.y > finale.y) and hasToMove then -- Vector set in the creation -> set the direction of the button
             current.x = current.x + animationSpeed * button.vector.x * dt
             current.y = current.y + animationSpeed * button.vector.y * dt
         elseif current.x > finale.x or current.y < finale.y then
@@ -138,7 +151,7 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
             current.y = finale.y
         end
 
-        if button.isMouseIn() then
+        if button.isMouseIn() then -- Hover with mouse
             button.color = {0, .7, .7, alpha}
             button.state.isHover = true
         else
@@ -173,7 +186,7 @@ end
 
 function ButtonFactoryModule.createButtonList(listButtonsLabel, font, isHorizontalDisplayed)
     local listButton = {}
-    local labelWidth = getMaxWidthLabels(listButtonsLabel, font)
+    local labelWidth = getMaxWidthLabels(listButtonsLabel, font) -- Already get the width of the longest label
     for n = 1, #listButtonsLabel do
         local button = createButton(n, #listButtonsLabel, listButtonsLabel[n], font, isHorizontalDisplayed, labelWidth)
 

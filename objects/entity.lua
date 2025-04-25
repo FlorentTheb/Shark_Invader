@@ -222,10 +222,18 @@ function Enemy:create(x, y)
     e.speedRotate = 2
     e.state = "patroling"
     e.states = {
-        patroling = function(player, dt) e:patrol(player, dt) end,
-        chasing   = function(player, dt) e:chase(player, dt) end,
-        firing    = function(player, dt) e:fire(player, dt) end,
-        fleeing   = function(player, dt) e:flee(player, dt) end,
+        patroling = function(player, dt)
+            e:patrol(player, dt)
+        end,
+        chasing = function(player, dt)
+            e:chase(player, dt)
+        end,
+        firing = function(player, dt)
+            e:fire(player, dt)
+        end,
+        fleeing = function(player, dt)
+            e:flee(player, dt)
+        end
     }
     return e
 end
@@ -255,7 +263,6 @@ function Enemy:update(player, dt)
     if self.states[self.state] then
         self.states[self.state](player, dt)
     end
-    return self.hp.current == 0
 end
 
 function Enemy:updateState(player)

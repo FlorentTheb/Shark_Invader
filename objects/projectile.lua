@@ -8,7 +8,7 @@ function Projectile:init()
     self.projectilesTable = {}
 end
 
-function Projectile:create(index, x, y, angle)
+function Projectile:create(index, x, y, angle) -- index helps to indicate if its shot from an enemy or the player. Needed for the check of hitboxes
     local p = {}
     if index == 1 then
         p.sprite = self.sprites.big

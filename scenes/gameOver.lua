@@ -29,6 +29,7 @@ function Gameover.update(dt)
             hasToStart = true
         end
         Gameover.buttons[n].update(hasToStart, Gameover.animation.buttonSpeed, dt)
+
         isButtonHover = isButtonHover or Gameover.buttons[n].state.isHover
         if isButtonHover then
             love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
