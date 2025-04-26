@@ -1,7 +1,6 @@
 local NextLevel = {}
 
-function NextLevel.init()
-    NextLevel.isVisible = false
+function NextLevel.new()
     NextLevel.arrow = {}
     NextLevel.arrow.img = love.graphics.newImage("assets/__images__/arrow.png")
     NextLevel.arrow.color = {1, 1, 1, 1}
@@ -35,7 +34,13 @@ function NextLevel.init()
     NextLevel.arrow.treshold = .7
     NextLevel.arrow.vector = 1
     NextLevel.arrow.speed = 20
+end
+
+function NextLevel.init()
+    NextLevel.blackScreenAlphaOut = 0
+    NextLevel.blackScreenAlphaIn = 1
     NextLevel.currentTime = 0
+    NextLevel.isVisible = false
 end
 
 function NextLevel.update(dt)
@@ -65,6 +70,48 @@ function NextLevel.drawArrow()
         love.graphics.draw(NextLevel.arrow.img, NextLevel.arrow.position.x, NextLevel.arrow.position.y, 0, 1, 1, NextLevel.arrow.origin.x, NextLevel.arrow.origin.y)
         love.graphics.pop()
     end
+end
+
+function NextLevel.updateFading(roundState, dt)
+    if roundState == "end" then
+        if NextLevel.blackScreenAlphaOut < 1 then
+            NextLevel.blackScreenAlphaOut = NextLevel.blackScreenAlphaOut + dt * .5
+        end
+
+        if NextLevel.blackScreenAlphaOut >= 1 then
+            NextLevel.blackScreenAlphaOut = 1
+            return true
+        else
+            return false
+        end
+    elseif roundState == "start" then
+        if NextLevel.blackScreenAlphaIn > 0 then
+            NextLevel.blackScreenAlphaIn = NextLevel.blackScreenAlphaIn - dt * .5
+        end
+
+        if NextLevel.blackScreenAlphaIn <= 0 then
+            NextLevel.blackScreenAlphaIn = 0
+            return true
+        else
+            return false
+        end
+    end
+end
+
+function NextLevel.drawFading(roundState)
+    local alpha
+    if roundState == "start" then
+        print("start")
+        alpha = NextLevel.blackScreenAlphaIn
+    else
+        print("end")
+        alpha = NextLevel.blackScreenAlphaOut
+    end
+    print(alpha)
+    love.graphics.push("all")
+    love.graphics.setColor(0, 0, 0, alpha)
+    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+    love.graphics.pop()
 end
 
 return NextLevel

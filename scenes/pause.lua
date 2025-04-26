@@ -1,10 +1,11 @@
 local Pause = {}
 local buttonFactory = require "factory/buttons"
+local FontFactoryModule = require "factory/fonts"
 
-function Pause.init()
+function Pause.new()
     Pause.fonts = {
-        giant = love.graphics.newFont("assets/__fonts__/gloomie_saturday.otf", 200),
-        small = love.graphics.newFont("assets/__fonts__/secret_thief.otf", 50)
+        giant = FontFactoryModule.getFont(2, "giant"),
+        small = FontFactoryModule.getFont(1, "small")
     }
     Pause.text = "Pause"
     Pause.size = {
@@ -13,19 +14,23 @@ function Pause.init()
     }
     Pause.animation = {
         buttonSpeed = 900,
-        deltaStartTimer = .3,
-        currentTime = 0
+        deltaStartTimer = .3
     }
     Pause.buttonLabels = {"Resume", "Options", "Menu"}
+end
+
+function Pause.init()
+    Pause.currentTime = 0
     Pause.buttons = buttonFactory.createButtonList(Pause.buttonLabels, Pause.fonts.small, true)
+    love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
 end
 
 function Pause.update(dt)
-    Pause.animation.currentTime = Pause.animation.currentTime + dt
+    Pause.currentTime = Pause.currentTime + dt
     local isButtonHover = false
     for n = 1, #Pause.buttons do
         local hasToStart = false
-        if Pause.animation.currentTime > (n - 1) * Pause.animation.deltaStartTimer then
+        if Pause.currentTime > (n - 1) * Pause.animation.deltaStartTimer then
             hasToStart = true
         end
         Pause.buttons[n].update(hasToStart, Pause.animation.buttonSpeed, dt)
@@ -55,28 +60,18 @@ function Pause.checkMousePressed()
     end
 end
 
-function Pause.reset()
-    for n = 1, #Pause.buttons do
-        Pause.buttons[n].reset(true)
-    end
-    Pause.animation.currentTime = 0
-end
-
 function Pause.checkMouseRelease()
     for n = 1, #Pause.buttons do
         if Pause.buttons[n].isClicked() then
             if Pause.buttons[n].label.text == "Resume" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
-                Pause.reset()
-                return "game"
+                return "Game"
             elseif Pause.buttons[n].label.text == "Menu" then
-                love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
-                Pause.reset()
-                return "menu"
+                return "Menu"
             end
         end
     end
-    return "pause"
+    return "Pause"
 end
 
 return Pause

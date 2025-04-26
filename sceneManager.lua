@@ -7,87 +7,113 @@ local NextLevel = require "utils/nextLevel"
 
 local SceneManager = {}
 
-function SceneManager:init()
-    self.currentScene = "menu"
-    Menu.init()
-    GameOver.init()
-    Pause.init()
-    Tutorial.init()
-    Game.init()
-    NextLevel.init()
+function SceneManager:new()
+    Menu.new()
+    Game.new()
+    Tutorial.new(Game.player)
+    NextLevel.new()
+    GameOver.new()
+    Pause.new()
+    SceneManager.init()
 end
 
-function SceneManager:update(dt)
-    if self.currentScene == "menu" then
+function SceneManager.init()
+    SceneManager.currentScene = "Menu"
+    Menu.init()
+end
+
+function SceneManager.update(dt)
+    local previousScene = SceneManager.currentScene
+    if SceneManager.currentScene == "Menu" then
         Menu.update(dt)
-    elseif self.currentScene == "game" then
-        if Game.update(dt) == "over" then
-            self.currentScene = "gameover"
-            Game.reset()
-        end
-    elseif self.currentScene == "gameover" then
+    elseif SceneManager.currentScene == "Game" then
+        SceneManager.currentScene = Game.update(dt)
+    elseif SceneManager.currentScene == "Game Over" then
         GameOver.update(dt)
-    elseif self.currentScene == "pause" then
+    elseif SceneManager.currentScene == "Pause" then
         Pause.update(dt)
-    elseif self.currentScene == "tutorial" then
-        if Tutorial.update(dt) == "game" then
-            self.currentScene = "game"
-            Tutorial.reset()
-            Game.loadLevel(Tutorial.player)
-        end
+    elseif SceneManager.currentScene == "Tutorial" then
+        SceneManager.currentScene = Tutorial.update(dt)
+    end
+
+    if previousScene ~= SceneManager.currentScene then
+        SceneManager.updateNewScene(previousScene)
     end
 end
 
-function SceneManager:draw(dt)
-    if self.currentScene == "menu" then
+function SceneManager.draw(dt)
+    if SceneManager.currentScene == "Menu" then
         Menu.draw(dt)
-    elseif self.currentScene == "game" then
+    elseif SceneManager.currentScene == "Game" then
         Game.draw(dt)
-    elseif self.currentScene == "gameover" then
+    elseif SceneManager.currentScene == "Game Over" then
         GameOver.draw(dt)
-    elseif self.currentScene == "pause" then
+    elseif SceneManager.currentScene == "Pause" then
         Pause.draw(dt)
-    elseif self.currentScene == "tutorial" then
+    elseif SceneManager.currentScene == "Tutorial" then
         Tutorial.draw()
     end
 end
 
-function SceneManager:handleMousePressed(_, _, button)
-    if self.currentScene == "menu" and button == 1 then
+function SceneManager.handleMousePressed(_, _, button)
+    if SceneManager.currentScene == "Menu" and button == 1 then
         Menu.checkMousePressed()
-    elseif self.currentScene == "gameover" and button == 1 then
+    elseif SceneManager.currentScene == "Game Over" and button == 1 then
         GameOver.checkMousePressed()
-    elseif self.currentScene == "pause" and button == 1 then
+    elseif SceneManager.currentScene == "Pause" and button == 1 then
         Pause.checkMousePressed()
-    elseif self.currentScene == "tutorial" and button == 1 then
+    elseif SceneManager.currentScene == "Tutorial" and button == 1 then
         Tutorial.checkMousePressed()
     end
 end
 
-function SceneManager:handleMouseReleased(_, _, button)
-    if self.currentScene == "menu" and button == 1 then
-        self.currentScene = Menu.checkMouseRelease()
-    elseif self.currentScene == "gameover" and button == 1 then
-        self.currentScene = GameOver.checkMouseRelease()
-        if self.currentScene == "game" then
-            Game.loadLevel()
-        end
-    elseif self.currentScene == "pause" and button == 1 then
-        self.currentScene = Pause.checkMouseRelease()
-        if self.currentScene == "menu" then
+function SceneManager.handleMouseReleased(_, _, button)
+    local previousScene = SceneManager.currentScene
+    if SceneManager.currentScene == "Menu" and button == 1 then
+        SceneManager.currentScene = Menu.checkMouseRelease()
+    elseif SceneManager.currentScene == "Game Over" and button == 1 then
+        SceneManager.currentScene = GameOver.checkMouseRelease()
+    elseif SceneManager.currentScene == "Pause" and button == 1 then
+        SceneManager.currentScene = Pause.checkMouseRelease()
+    elseif SceneManager.currentScene == "Tutorial" and button == 1 then
+        SceneManager.currentScene = Tutorial.checkMouseRelease()
+    end
+
+    if previousScene ~= SceneManager.currentScene then
+        SceneManager.updateNewScene(previousScene)
+    end
+end
+
+function SceneManager.updateNewScene(previousScene)
+    print(previousScene .. " => " .. SceneManager.currentScene)
+
+    if SceneManager.currentScene == "Menu" then
+        Menu.init()
+        if previousScene == "Pause" then
             Game.reset()
         end
-    elseif self.currentScene == "tutorial" and button == 1 then
-        self.currentScene = Tutorial.checkMouseRelease()
-        if self.currentScene == "game" then
-            Game.loadLevel()
+    elseif SceneManager.currentScene == "Game Over" then
+        Game.reset()
+        GameOver.init()
+    elseif SceneManager.currentScene == "Pause" then
+        Pause.init()
+    elseif SceneManager.currentScene == "Tutorial" then
+        Tutorial.init()
+    elseif SceneManager.currentScene == "Game" then
+        if previousScene ~= "Pause" then
+            Game.init()
         end
     end
 end
 
-function SceneManager:handleKeyPressed(key)
-    if self.currentScene == "game" and key == "escape" then
-        self.currentScene = "pause"
+function SceneManager.handleKeyPressed(key)
+    local previousScene = SceneManager.currentScene
+    if SceneManager.currentScene == "Game" then
+        SceneManager.currentScene = Game.handleKeyPressed(key)
+    end
+
+    if previousScene ~= SceneManager.currentScene then
+        SceneManager.updateNewScene(previousScene)
     end
 end
 

@@ -4,9 +4,8 @@ local Projectile = require "objects/projectile"
 local Entity = {}
 Entity.__index = Entity
 
-function Entity:create(x, y, type)
+function Entity:create(x, y)
     local e = {}
-    e.type = type
     e.body = {
         sprite,
         angle = 0,
@@ -38,7 +37,7 @@ function Entity:newProjectile(projectileIndex, dt)
     end
 
     if self.projectileTimer > self.projectileTimerTreshold then
-        Projectile:create(projectileIndex, projectileX, projectileY, projectileAngle)
+        Projectile.create(projectileIndex, projectileX, projectileY, projectileAngle)
         self.projectileTimer = 0
     end
 end
@@ -104,8 +103,8 @@ end
 local Player = {}
 setmetatable(Player, {__index = Entity})
 
-function Player:create()
-    local p = Entity:create(love.graphics.getWidth() * .5, love.graphics.getHeight() * .5, "player")
+function Player:create(x, y)
+    local p = Entity:create(x, y)
     p.body.sprite = love.graphics.newImage("assets/__images__/shark_body.png")
     p.body.origin = {x = p.body.sprite:getWidth() / 2 + 2, y = p.body.sprite:getHeight() / 2}
     p.turret = {}
@@ -133,17 +132,10 @@ function Player:create()
     return p
 end
 
-function Player:reset()
-    self.body.position.x = love.graphics.getWidth() * .5
-    self.body.position.y = love.graphics.getHeight() * .5
-    self.smallProjectiles = {}
-    self.hp.current = self.hp.max
-    self.body.angle = 0
-end
-
 function Player:update(dt)
     self.projectileTimer = self.projectileTimer + dt
     self:updateTurret()
+    return self.hp.current == 0
 end
 
 function Player:handleInputs(dt)
@@ -176,12 +168,15 @@ function Player:updateTurret()
     end
 end
 
-function Player:draw()
+function Player:draw(isHealthDisplayed)
     love.graphics.draw(self.body.sprite, self.body.position.x, self.body.position.y, self.body.angle, self.size, self.size, self.body.origin.x, self.body.origin.y)
     if self.turret then
         for n = 1, #self.turret.positions do
             love.graphics.draw(self.turret.sprite, self.turret.positions[n].x, self.turret.positions[n].y, self.turret.angle, self.size, self.size, self.turret.origin.x, self.turret.origin.y)
         end
+    end
+    if isHealthDisplayed then
+        self:drawHealth()
     end
 end
 
@@ -189,7 +184,7 @@ local Enemy = {}
 setmetatable(Enemy, {__index = Entity})
 
 function Enemy:create(x, y)
-    local e = Entity:create(x, y, "enemy")
+    local e = Entity:create(x, y)
     e.body.sprite = love.graphics.newImage("assets/__images__/enemy.png")
     e.body.origin = {x = e.body.sprite:getWidth() / 2, y = e.body.sprite:getHeight() / 2}
     e.hp = {
@@ -232,12 +227,14 @@ function Enemy:create(x, y)
     return e
 end
 
-function Enemy:draw()
+function Enemy:draw(isHealthDisplayed)
     love.graphics.push("all")
     love.graphics.setColor(self.color)
     love.graphics.draw(self.body.sprite, self.body.position.x, self.body.position.y, self.body.angle, self.size, self.size, self.body.origin.x, self.body.origin.y)
     love.graphics.pop()
-    self:drawHealth()
+    if isHealthDisplayed then
+        self:drawHealth()
+    end
 end
 
 function Enemy:update(player, dt)
