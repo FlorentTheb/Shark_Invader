@@ -1,6 +1,6 @@
 local Tutorial = {}
 
-local ButtonFactory = require "factory/buttons"
+local ButtonFactoryModule = require "factory/buttons"
 local FontFactoryModule = require "factory/fonts"
 
 local Entity = require "objects/entity"
@@ -40,7 +40,7 @@ function Tutorial.new(player)
             isStepOK = false
         }
     }
-    Tutorial.skipButton = ButtonFactory.createSingleButton("Skip", Tutorial.fonts.small, 60, 50, .3)
+    Tutorial.skipButton = ButtonFactoryModule.createSingleButton("Skip", Tutorial.fonts.small, 60, 50, .3)
     Tutorial.player = player
 end
 

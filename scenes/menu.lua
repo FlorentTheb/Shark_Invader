@@ -1,5 +1,5 @@
 local Menu = {}
-local ButtonFactory = require "factory/buttons"
+local ButtonFactoryModule = require "factory/buttons"
 local FontFactoryModule = require "factory/fonts"
 
 function Menu.new()
@@ -13,7 +13,7 @@ end
 
 function Menu.init()
     Menu.currentTime = 0
-    Menu.buttons = ButtonFactory.createButtonList(Menu.buttonLabels, Menu.font, false)
+    Menu.buttons = ButtonFactoryModule.createButtonList(Menu.buttonLabels, Menu.font, false)
     love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
 end
 
