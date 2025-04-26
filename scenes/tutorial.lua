@@ -142,11 +142,7 @@ function Tutorial.checkSteps(dt)
     end
 
     if Tutorial.stepIndex == #Tutorial.steps then
-        if Tutorial.player.body.position.x < NextLevel.exit.size.width * .5 then
-            if Tutorial.player.body.position.y < NextLevel.exit.position.y + NextLevel.exit.size.height and Tutorial.player.body.position.y > NextLevel.exit.position.y then
-                Tutorial.isOver = true
-            end
-        end
+        Tutorial.isOver = NextLevel.isInExit(Tutorial.player.body.position.x, Tutorial.player.body.position.y)
     end
 end
 
