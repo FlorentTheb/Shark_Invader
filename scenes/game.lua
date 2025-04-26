@@ -10,7 +10,7 @@ function Game.new()
     Projectile.new()
     Game.player = Player:create(love.graphics.getWidth() * .5, love.graphics.getHeight() * .5)
     Game.enemies = {}
-    Game.maxLevel = 1
+    Game.maxLevel = 5
     Game.currentLevel = 1
 end
 
@@ -40,7 +40,6 @@ function Game.updateEnemies(dt)
             if #Game.enemies == 1 then -- last enemy
                 NextLevel.isVisible = true
                 if Game.currentLevel == Game.maxLevel then
-                    print("OVER")
                     Game.roundOver = true
                 end
             end

@@ -5,11 +5,13 @@ local FontFactoryModule = require "factory/fonts"
 function GameOver.new()
     GameOver.fonts = {
         giant = FontFactoryModule.getFont(2, "giant"),
-        small = FontFactoryModule.getFont(1, "small")
+        big = FontFactoryModule.getFont(1, "big"),
+        medium = FontFactoryModule.getFont(1, "medium")
     }
-    GameOver.text = "Game Over"
-    GameOver.size = {
-        width = GameOver.fonts.giant:getWidth(GameOver.text),
+    GameOver.title = "Game Over"
+    GameOver.text = "You lose !"
+    GameOver.titleSize = {
+        width = GameOver.fonts.giant:getWidth(GameOver.title),
         height = GameOver.fonts.giant:getHeight()
     }
     GameOver.animation = {
@@ -21,7 +23,7 @@ end
 
 function GameOver.init()
     GameOver.currentTime = 0
-    GameOver.buttons = buttonFactory.createButtonList(GameOver.buttonLabels, GameOver.fonts.small, true)
+    GameOver.buttons = buttonFactory.createButtonList(GameOver.buttonLabels, GameOver.fonts.medium, true)
     love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
 end
 
@@ -47,7 +49,8 @@ end
 function GameOver.draw()
     love.graphics.push("all")
     love.graphics.setColor({0, 0.32, 0.8, 0.6})
-    love.graphics.printf(GameOver.text, GameOver.fonts.giant, love.graphics.getWidth() * .5, love.graphics.getHeight() * .3, GameOver.size.width, "left", 0, 1, 1, GameOver.size.width * .5, GameOver.size.height * .5)
+    love.graphics.printf(GameOver.title, GameOver.fonts.giant, love.graphics.getWidth() * .5, love.graphics.getHeight() * .2, GameOver.titleSize.width, "left", 0, 1, 1, GameOver.titleSize.width * .5, GameOver.titleSize.height * .5)
+    love.graphics.printf(GameOver.text, GameOver.fonts.big, love.graphics.getWidth() * .5, love.graphics.getHeight() * .2 + GameOver.fonts.giant:getHeight(), GameOver.fonts.big:getWidth(GameOver.text), "left", 0, 1, 1, GameOver.fonts.big:getWidth(GameOver.text) * .5, GameOver.fonts.big:getHeight() * .5)
     love.graphics.pop()
     for n = 1, #GameOver.buttons do
         GameOver.buttons[n].draw()

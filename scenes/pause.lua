@@ -5,7 +5,7 @@ local FontFactoryModule = require "factory/fonts"
 function Pause.new()
     Pause.fonts = {
         giant = FontFactoryModule.getFont(2, "giant"),
-        small = FontFactoryModule.getFont(1, "small")
+        medium = FontFactoryModule.getFont(1, "medium")
     }
     Pause.text = "Pause"
     Pause.size = {
@@ -21,7 +21,7 @@ end
 
 function Pause.init()
     Pause.currentTime = 0
-    Pause.buttons = buttonFactory.createButtonList(Pause.buttonLabels, Pause.fonts.small, true)
+    Pause.buttons = buttonFactory.createButtonList(Pause.buttonLabels, Pause.fonts.medium, true)
     love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
 end
 
