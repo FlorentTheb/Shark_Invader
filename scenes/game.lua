@@ -10,6 +10,7 @@ function Game.new()
     Projectile.new()
     Game.player = Player:create(love.graphics.getWidth() * .5, love.graphics.getHeight() * .5)
     Game.enemies = {}
+    Game.maxLevel = 1
     Game.currentLevel = 1
 end
 
@@ -37,13 +38,14 @@ function Game.updateEnemies(dt)
         Game.enemies[n]:update(Game.player, dt)
         if Game.enemies[n].hp.current == 0 then
             if #Game.enemies == 1 then -- last enemy
-                print("last dead")
                 NextLevel.isVisible = true
+                if Game.currentLevel == Game.maxLevel then
+                    print("OVER")
+                    Game.roundOver = true
+                end
             end
-            print("Enemy deleted")
             table.remove(Game.enemies, n)
         end
-        print("nb = " .. #Game.enemies)
     end
 end
 
@@ -81,14 +83,14 @@ function Game.update(dt)
             Game.player:move(dt * .5, 1)
         end
     else
+        Game.updateEnemies(dt)
         if not Game.roundOver then
             Game.player:handleInputs(dt)
-            Game.updateEnemies(dt)
             Game.updateProjectiles(dt)
         end
 
         NextLevel.update(dt)
-        if NextLevel.isVisible then
+        if NextLevel.isVisible and not Game.roundOver then
             if NextLevel.isInExit(Game.player.body.position.x, Game.player.body.position.y) then
                 Game.roundOver = true
             end
@@ -96,7 +98,7 @@ function Game.update(dt)
     end
     if Game.roundOver then
         if NextLevel.updateFading("end", dt) then
-            Game.nextRound()
+            return Game.nextRound()
         end
     end
 
@@ -104,16 +106,25 @@ function Game.update(dt)
 end
 
 function Game.nextRound()
-    Game.currentLevel = Game.currentLevel + 1
-    Game.init()
+    if Game.currentLevel < Game.maxLevel then
+        Game.currentLevel = Game.currentLevel + 1
+        Game.init()
+        return "Game"
+    else
+        return "Game Over"
+    end
 end
 
 function Game.draw()
-    NextLevel.drawExit()
+    if not Game.roundOver then
+        NextLevel.drawExit()
+    end
     Game.player:draw(not Game.roundStarting)
     Game.drawEnemies(not Game.roundStarting)
     Game.drawProjectiles()
-    NextLevel.drawArrow()
+    if not Game.roundOver then
+        NextLevel.drawArrow()
+    end
 
     if Game.roundStarting then
         NextLevel.drawFading("start")
@@ -131,6 +142,22 @@ function Game.loadLevel()
         table.insert(Game.enemies, Enemy:create(100, 100))
         table.insert(Game.enemies, Enemy:create(100, 200))
         table.insert(Game.enemies, Enemy:create(100, 300))
+    elseif Game.currentLevel == 3 then
+        table.insert(Game.enemies, Enemy:create(200, 100))
+        table.insert(Game.enemies, Enemy:create(200, 200))
+        table.insert(Game.enemies, Enemy:create(200, 300))
+    elseif Game.currentLevel == 4 then
+        table.insert(Game.enemies, Enemy:create(100, 100))
+        table.insert(Game.enemies, Enemy:create(100, 200))
+        table.insert(Game.enemies, Enemy:create(100, 300))
+        table.insert(Game.enemies, Enemy:create(100, 400))
+        table.insert(Game.enemies, Enemy:create(100, 500))
+    elseif Game.currentLevel == 5 then
+        table.insert(Game.enemies, Enemy:create(200, 100))
+        table.insert(Game.enemies, Enemy:create(200, 200))
+        table.insert(Game.enemies, Enemy:create(200, 300))
+        table.insert(Game.enemies, Enemy:create(200, 400))
+        table.insert(Game.enemies, Enemy:create(200, 500))
     end
 end
 
