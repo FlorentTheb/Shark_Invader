@@ -29,7 +29,7 @@ function Tutorial.init()
             isStepOK = false
         },
         {
-            text = "Tire en maintenant clic droit de la souris",
+            text = "Tire en maintenant clic gauche de la souris",
             isStepOK = false
         },
         {
