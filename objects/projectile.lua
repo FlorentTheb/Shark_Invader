@@ -50,9 +50,8 @@ function Projectile.create(index, x, y, angle) -- index helps to indicate if its
                 if enemy:isPointInHitbox(p.position.x, p.position.y) then
                     if enemy.hp.current > 0 then
                         enemy.hp.current = enemy.hp.current - p.damage
-                    end
-                    if enemy.hp.current <= 0 then
-                        table.remove(enemies, n)
+                    elseif enemy.hp.current < 0 then
+                        enemy.hp.current = 0
                     end
                     return true
                 end
