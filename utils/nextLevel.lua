@@ -44,11 +44,21 @@ function NextLevel.init()
 end
 
 function NextLevel.update(dt)
-    NextLevel.arrow.position.x = NextLevel.arrow.position.x + dt * NextLevel.arrow.speed * NextLevel.arrow.vector
-    NextLevel.currentTime = NextLevel.currentTime + dt
-    if NextLevel.currentTime > NextLevel.arrow.treshold then
-        NextLevel.currentTime = 0
-        NextLevel.arrow.vector = -NextLevel.arrow.vector
+    if NextLevel.isVisible then
+        NextLevel.arrow.position.x = NextLevel.arrow.position.x + dt * NextLevel.arrow.speed * NextLevel.arrow.vector
+        NextLevel.currentTime = NextLevel.currentTime + dt
+        if NextLevel.currentTime > NextLevel.arrow.treshold then
+            NextLevel.currentTime = 0
+            NextLevel.arrow.vector = -NextLevel.arrow.vector
+        end
+    end
+end
+
+function NextLevel.isInExit(x, y)
+    if x < NextLevel.exit.size.width * .5 then
+        if y < NextLevel.exit.position.y + NextLevel.exit.size.height and y > NextLevel.exit.position.y then
+            return true
+        end
     end
 end
 
@@ -101,13 +111,10 @@ end
 function NextLevel.drawFading(roundState)
     local alpha
     if roundState == "start" then
-        print("start")
         alpha = NextLevel.blackScreenAlphaIn
     else
-        print("end")
         alpha = NextLevel.blackScreenAlphaOut
     end
-    print(alpha)
     love.graphics.push("all")
     love.graphics.setColor(0, 0, 0, alpha)
     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
