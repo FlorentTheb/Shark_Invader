@@ -1,36 +1,41 @@
-local Gameover = {}
+local GameOver = {}
 local buttonFactory = require "factory/buttons"
+local FontFactoryModule = require "factory/fonts"
 
-function Gameover.init()
-    Gameover.fonts = {
-        giant = love.graphics.newFont("assets/__fonts__/gloomie_saturday.otf", 200),
-        small = love.graphics.newFont("assets/__fonts__/secret_thief.otf", 50)
+function GameOver.new()
+    GameOver.fonts = {
+        giant = FontFactoryModule.getFont(2, "giant"),
+        small = FontFactoryModule.getFont(1, "small")
     }
-    Gameover.text = "Game Over"
-    Gameover.size = {
-        width = Gameover.fonts.giant:getWidth(Gameover.text),
-        height = Gameover.fonts.giant:getHeight()
+    GameOver.text = "Game Over"
+    GameOver.size = {
+        width = GameOver.fonts.giant:getWidth(GameOver.text),
+        height = GameOver.fonts.giant:getHeight()
     }
-    Gameover.animation = {
+    GameOver.animation = {
         buttonSpeed = 900,
-        deltaStartTimer = .3,
-        currentTime = 0
+        deltaStartTimer = .3
     }
-    Gameover.buttonLabels = {"Restart", "Menu"}
-    Gameover.buttons = buttonFactory.createButtonList(Gameover.buttonLabels, Gameover.fonts.small, true)
+    GameOver.buttonLabels = {"Restart", "Menu"}
 end
 
-function Gameover.update(dt)
-    Gameover.animation.currentTime = Gameover.animation.currentTime + dt
+function GameOver.init()
+    GameOver.currentTime = 0
+    GameOver.buttons = buttonFactory.createButtonList(GameOver.buttonLabels, GameOver.fonts.small, true)
+    love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
+end
+
+function GameOver.update(dt)
+    GameOver.currentTime = GameOver.currentTime + dt
     local isButtonHover = false
-    for n = 1, #Gameover.buttons do
+    for n = 1, #GameOver.buttons do
         local hasToStart = false
-        if Gameover.animation.currentTime > (n - 1) * Gameover.animation.deltaStartTimer then
+        if GameOver.currentTime > (n - 1) * GameOver.animation.deltaStartTimer then
             hasToStart = true
         end
-        Gameover.buttons[n].update(hasToStart, Gameover.animation.buttonSpeed, dt)
+        GameOver.buttons[n].update(hasToStart, GameOver.animation.buttonSpeed, dt)
 
-        isButtonHover = isButtonHover or Gameover.buttons[n].state.isHover
+        isButtonHover = isButtonHover or GameOver.buttons[n].state.isHover
         if isButtonHover then
             love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
         else
@@ -39,44 +44,41 @@ function Gameover.update(dt)
     end
 end
 
-function Gameover.draw()
+function GameOver.draw()
     love.graphics.push("all")
     love.graphics.setColor({0, 0.32, 0.8, 0.6})
-    love.graphics.printf(Gameover.text, Gameover.fonts.giant, love.graphics.getWidth() * .5, love.graphics.getHeight() * .3, Gameover.size.width, "left", 0, 1, 1, Gameover.size.width * .5, Gameover.size.height * .5)
+    love.graphics.printf(GameOver.text, GameOver.fonts.giant, love.graphics.getWidth() * .5, love.graphics.getHeight() * .3, GameOver.size.width, "left", 0, 1, 1, GameOver.size.width * .5, GameOver.size.height * .5)
     love.graphics.pop()
-    for n = 1, #Gameover.buttons do
-        Gameover.buttons[n].draw()
+    for n = 1, #GameOver.buttons do
+        GameOver.buttons[n].draw()
     end
 end
 
-function Gameover.checkMousePressed()
-    for n = 1, #Gameover.buttons do
-        Gameover.buttons[n].mousePressed()
+function GameOver.checkMousePressed()
+    for n = 1, #GameOver.buttons do
+        GameOver.buttons[n].mousePressed()
     end
 end
 
-function Gameover.reset()
-    for n = 1, #Gameover.buttons do
-        Gameover.buttons[n].reset(true)
+function GameOver.reset()
+    for n = 1, #GameOver.buttons do
+        GameOver.buttons[n].reset(true)
     end
-    Gameover.animation.currentTime = 0
+    GameOver.currentTime = 0
 end
 
-function Gameover.checkMouseRelease()
-    for n = 1, #Gameover.buttons do
-        if Gameover.buttons[n].isClicked() then
-            if Gameover.buttons[n].label.text == "Restart" then
+function GameOver.checkMouseRelease()
+    for n = 1, #GameOver.buttons do
+        if GameOver.buttons[n].isClicked() then
+            if GameOver.buttons[n].label.text == "Restart" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
-                Gameover.reset()
-                return "game"
-            elseif Gameover.buttons[n].label.text == "Menu" then
-                love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
-                Gameover.reset()
-                return "menu"
+                return "Game"
+            elseif GameOver.buttons[n].label.text == "Menu" then
+                return "Menu"
             end
         end
     end
-    return "gameover"
+    return "Game Over"
 end
 
-return Gameover
+return GameOver

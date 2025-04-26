@@ -1,21 +1,24 @@
 Projectile = {}
 
-function Projectile:init()
-    self.sprites = {
+function Projectile.new()
+    Projectile.sprites = {
         big = love.graphics.newImage("assets/__images__/bulle_01.png"),
         small = love.graphics.newImage("assets/__images__/bulle_02.png")
     }
-    self.projectilesTable = {}
 end
 
-function Projectile:create(index, x, y, angle) -- index helps to indicate if its shot from an enemy or the player. Needed for the check of hitboxes
+function Projectile.init()
+    Projectile.projectilesTable = {}
+end
+
+function Projectile.create(index, x, y, angle) -- index helps to indicate if its shot from an enemy or the player. Needed for the check of hitboxes
     local p = {}
     if index == 1 then
-        p.sprite = self.sprites.big
+        p.sprite = Projectile.sprites.big
         p.damage = 20
         p.speed = 400
     else
-        p.sprite = self.sprites.small
+        p.sprite = Projectile.sprites.small
         p.damage = 5
         p.speed = 600
     end
@@ -70,36 +73,19 @@ function Projectile:create(index, x, y, angle) -- index helps to indicate if its
         love.graphics.draw(p.sprite, p.position.x, p.position.y, p.angle, p.size, p.size, p.origin.x, p.origin.y)
     end
 
-    table.insert(self.projectilesTable, p)
-end
-
-function Projectile:update(player, enemies, dt)
-    if #self.projectilesTable > 0 then
-        for n = #self.projectilesTable, 1, -1 do
-            local projectile = self.projectilesTable[n]
-            projectile.updatePosition(dt)
-            if player and enemies then
-                if projectile.isHittingEntity(player, enemies) then
-                    table.remove(self.projectilesTable, n)
-                end
-            end
-            if projectile.isOut() then
-                table.remove(self.projectilesTable, n)
-            end
+    function p.update(player, enemies, dt)
+        p.updatePosition(dt)
+        if p.isOut() then
+            return true
+        end
+        if player and enemies and p.isHittingEntity(player, enemies) then
+            return true
+        else
+            return false
         end
     end
-end
 
-function Projectile:draw()
-    if #self.projectilesTable > 0 then
-        for n = 1, #self.projectilesTable do
-            self.projectilesTable[n].draw()
-        end
-    end
-end
-
-function Projectile:reset()
-    self.projectilesTable = {}
+    table.insert(Projectile.projectilesTable, p)
 end
 
 return Projectile

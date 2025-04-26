@@ -1,15 +1,18 @@
 local Tutorial = {}
 
-local buttonFactory = require "factory/buttons"
+local ButtonFactory = require "factory/buttons"
+local FontFactoryModule = require "factory/fonts"
+
 local Entity = require "objects/entity"
 local Player = Entity.Player
 local Projectile = require "objects/projectile"
 local NextLevel = require "utils/nextLevel"
 
-function Tutorial.init()
+function Tutorial.new(player)
+    Projectile.new()
     Tutorial.fonts = {
-        medium = love.graphics.newFont("assets/__fonts__/secret_thief.otf", 50),
-        small = love.graphics.newFont("assets/__fonts__/secret_thief.otf", 25)
+        medium = FontFactoryModule.getFont(1, "medium"),
+        small = FontFactoryModule.getFont(1, "small")
     }
     Tutorial.steps = {
         {
@@ -37,40 +40,59 @@ function Tutorial.init()
             isStepOK = false
         }
     }
+    Tutorial.skipButton = ButtonFactory.createSingleButton("Skip", Tutorial.fonts.small, 60, 50, .3)
+    Tutorial.player = player
+end
+
+function Tutorial.init()
+    NextLevel.init()
+    Projectile.init()
+    Tutorial.projectiles = Projectile.projectilesTable
     Tutorial.stepIndex = 1
     Tutorial.isOver = false
-    Tutorial.skipButton = buttonFactory.createSingleButton("Skip", Tutorial.fonts.small, 60, 50, .3)
-    Tutorial.startGame = false
-    Tutorial.blackScreenAlpha = 0
-
-    Tutorial.player = Player:create()
-    Projectile:init()
+    Tutorial.player.body.position.x = love.graphics.getWidth() * .5
+    Tutorial.player.body.position.y = love.graphics.getHeight() * .5
+    Tutorial.player.body.angle = 0
+    for n = 1, #Tutorial.steps do
+        Tutorial.steps[n].isStepOK = false
+    end
+    NextLevel.isVisible = false
+    love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
 end
 
 function Tutorial.updateStep()
     local currentStep = Tutorial.steps[Tutorial.stepIndex]
 
-    if currentStep and currentStep.isStepOK and not Tutorial.isOver then
+    if currentStep and currentStep.isStepOK and Tutorial.stepIndex < #Tutorial.steps then
         Tutorial.stepIndex = Tutorial.stepIndex + 1
-    end
-
-    if Tutorial.stepIndex == #Tutorial.steps then
-        Tutorial.isOver = true
+    elseif Tutorial.stepIndex == #Tutorial.steps then
         NextLevel.isVisible = true
     end
 end
 
-function Tutorial.update(dt)
-    if not Tutorial.startGame then
-        Tutorial.checkSteps(dt)
-    elseif Tutorial.blackScreenAlpha < 1 then
-        Tutorial.blackScreenAlpha = Tutorial.blackScreenAlpha + dt * .5
+function Tutorial.updateProjectiles(dt)
+    for n = #Tutorial.projectiles, 1, -1 do
+        if Tutorial.projectiles[n].update(Tutorial.player, nil, dt) then
+            table.remove(Tutorial.projectiles, n)
+        end
     end
+end
 
-    if Tutorial.blackScreenAlpha >= 1 then
-        Tutorial.blackScreenAlpha = 1
-        Tutorial.reset()
-        return "game"
+function Tutorial.drawProjectiles()
+    for n = #Tutorial.projectiles, 1, -1 do
+        Tutorial.projectiles[n].draw()
+    end
+end
+
+function Tutorial.update(dt)
+    if not Tutorial.isOver then
+        Tutorial.checkSteps(dt)
+    else
+        if NextLevel.updateFading("end", dt) then
+            return "Game"
+        else
+            return "Tutorial"
+        end
     end
 
     Tutorial.updateStep()
@@ -82,9 +104,9 @@ function Tutorial.update(dt)
     else
         love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
     end
-    Projectile:update(nil, nil, dt)
+    Tutorial.updateProjectiles(dt)
     NextLevel.update(dt)
-    return "tutorial"
+    return "Tutorial"
 end
 
 function Tutorial.checkSteps(dt)
@@ -122,7 +144,7 @@ function Tutorial.checkSteps(dt)
     if Tutorial.stepIndex == #Tutorial.steps then
         if Tutorial.player.body.position.x < NextLevel.exit.size.width * .5 then
             if Tutorial.player.body.position.y < NextLevel.exit.position.y + NextLevel.exit.size.height and Tutorial.player.body.position.y > NextLevel.exit.position.y then
-                Tutorial.startGame = true
+                Tutorial.isOver = true
             end
         end
     end
@@ -131,7 +153,7 @@ end
 function Tutorial.draw()
     NextLevel.drawExit()
     Tutorial.player:draw()
-    Projectile:draw()
+    Tutorial.drawProjectiles()
 
     NextLevel.drawArrow()
 
@@ -145,41 +167,24 @@ function Tutorial.draw()
     local oX = Tutorial.fonts.medium:getWidth(currentText) * .5
     local oY = Tutorial.fonts.medium:getHeight() * .5
     love.graphics.printf(currentText, Tutorial.fonts.medium, posX, posY, Tutorial.fonts.medium:getWidth(currentText), "left", 0, 1, 1, oX, oY)
-    if Tutorial.startGame then
-        love.graphics.setColor(0, 0, 0, Tutorial.blackScreenAlpha)
-        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-    end
     love.graphics.pop()
+    if Tutorial.isOver then
+        NextLevel.drawFading("end")
+    end
 end
 
 function Tutorial.checkMousePressed()
     Tutorial.skipButton.mousePressed()
 end
 
-function Tutorial.reset()
-    Tutorial.skipButton.reset(false)
-    Tutorial.stepIndex = 1
-    Tutorial.isOver = false
-    Tutorial.startGame = false
-    NextLevel.isVisible = false
-    for n = 1, #Tutorial.steps do
-        Tutorial.steps[n].isStepOK = false
-    end
-    Tutorial.blackScreenAlpha = 0
-    Tutorial.player:reset()
-    love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
-end
-
 function Tutorial.checkMouseRelease()
     if Tutorial.skipButton.isClicked() then
         if Tutorial.skipButton.label.text == "Skip" then
             love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
-            Tutorial.reset()
-            NextLevel.isVisible = false
-            return "game"
+            Tutorial.isOver = true
         end
     end
-    return "tutorial"
+    return "Tutorial"
 end
 
 return Tutorial
