@@ -35,7 +35,7 @@ function GameOver.update(isSettingsPanelOpen, dt)
             GameOver.buttons[n].state.isMoving = true
         end
         GameOver.buttons[n].update(nil, love.graphics.getHeight() * .7, n, #GameOver.buttons, isSettingsPanelOpen, dt)
-        
+
         isButtonHover = isButtonHover or GameOver.buttons[n].state.isHover
         if isButtonHover then
             love.mouse.setCursor(love.mouse.getSystemCursor("hand"))

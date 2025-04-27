@@ -58,6 +58,8 @@ local function createButton(font, label, width)
 
     function button.isClicked()
         if button.isMouseIn() and button.state.isClicked then -- Confirm with this method that the release of the mouse is on the same button as the click
+            SoundManager.click:stop()
+            SoundManager.click:play()
             return true
         else
             return false

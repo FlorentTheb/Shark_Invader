@@ -11,7 +11,7 @@ function Game.new()
     Projectile.new()
     Game.player = Player:create(love.graphics.getWidth() * .5, love.graphics.getHeight() * .5)
     Game.enemies = {}
-    Game.maxLevel = 5
+    Game.maxLevel = 1
     Game.currentLevel = 1
     Game.levelDisplayFont = FontFactoryModule.getFont(2, "big")
 end
