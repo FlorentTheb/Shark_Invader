@@ -33,7 +33,7 @@ function Pause.update(dt)
         if Pause.currentTime > (n - 1) * Pause.animation.deltaStartTimer then
             hasToStart = true
         end
-        Pause.buttons[n].update(hasToStart, Pause.animation.buttonSpeed, dt)
+        Pause.buttons[n].update(hasToStart, Pause.animation.buttonSpeed, dt, true, n, #Pause.buttons)
 
         isButtonHover = isButtonHover or Pause.buttons[n].state.isHover
         if isButtonHover then

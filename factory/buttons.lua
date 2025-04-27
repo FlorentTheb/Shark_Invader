@@ -137,19 +137,27 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
         end
     end
 
-    function button.update(hasToMove, animationSpeed, dt)
-        local current = button.position.current
-        local finale = button.position.finale
-        if hasToMove then
-            if (current.x < finale.x or current.y > finale.y) then -- Vector set in the creation -> set the direction of the button
-                current.x = current.x + animationSpeed * button.vector.x * dt
-                current.y = current.y + animationSpeed * button.vector.y * dt
-            elseif current.x > finale.x or current.y < finale.y then
-                current.x = finale.x
-                current.y = finale.y
+    function button.update(hasToMove, animationSpeed, dt, isHorizontalDisplayed, indexButton, totalButtons)
+        if animationSpeed then
+            local xOrigin = love.graphics.getWidth() * .5 - (totalButtons - 1) * ((button.width + button.margin) * .5)
+            local yOrigin = love.graphics.getHeight() * .5 - (totalButtons - 1) * ((button.height + button.margin) * .5)
+            button.position.finale = {
+                x = isHorizontalDisplayed and xOrigin + (button.width + button.margin) * (indexButton - 1) or love.graphics.getWidth() * .5,
+                y = isHorizontalDisplayed and love.graphics.getHeight() * .7 or yOrigin + (button.height + button.margin) * (indexButton - 1)
+            }
+            local current = button.position.current
+            local finale = button.position.finale
+
+            if hasToMove then
+                if (current.x < finale.x or current.y > finale.y) then -- Vector set in the creation -> set the direction of the button
+                    current.x = current.x + animationSpeed * button.vector.x * dt
+                    current.y = current.y + animationSpeed * button.vector.y * dt
+                elseif current.x > finale.x or current.y < finale.y then
+                    current.x = finale.x
+                    current.y = finale.y
+                end
             end
         end
-
         if button.isMouseIn() then -- Hover with mouse
             button.color = {0, .7, .7, 1}
             button.state.isHover = true

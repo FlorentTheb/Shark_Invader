@@ -35,7 +35,7 @@ function GameOver.update(dt)
         if GameOver.currentTime > (n - 1) * GameOver.animation.deltaStartTimer then
             hasToStart = true
         end
-        GameOver.buttons[n].update(hasToStart, GameOver.animation.buttonSpeed, dt)
+        GameOver.buttons[n].update(hasToStart, GameOver.animation.buttonSpeed, dt, true, n, #GameOver.buttons)
 
         isButtonHover = isButtonHover or GameOver.buttons[n].state.isHover
         if isButtonHover then

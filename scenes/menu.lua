@@ -25,7 +25,7 @@ function Menu.update(dt)
         if Menu.currentTime > (n - 1) * Menu.animation.deltaStartTimer then
             hasToStart = true
         end
-        Menu.buttons[n].update(hasToStart, Menu.animation.buttonSpeed, dt)
+        Menu.buttons[n].update(hasToStart, Menu.animation.buttonSpeed, dt, false, n, #Menu.buttons)
 
         isButtonHover = isButtonHover or Menu.buttons[n].state.isHover
         if isButtonHover then
