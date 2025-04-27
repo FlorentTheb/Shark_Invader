@@ -38,6 +38,25 @@ function Settings.new()
         },
         {
             label = {
+                text = "Passer tutoriel",
+                position = {
+                    x,
+                    y
+                }
+            },
+            toggle = {
+                position = {
+                    x,
+                    y
+                },
+                toggleSize = 20,
+                toggleCheckedSize = 16,
+                isToggled = false,
+                isHover = false
+            }
+        },
+        {
+            label = {
                 text = "Volume musique",
                 position = {
                     x,
@@ -101,11 +120,12 @@ function Settings.update(dt)
     }
 
     Settings.updateSettings()
-    Settings.isFullScreenToggleHover()
+    Settings.isToggleHover(1)
+    Settings.isToggleHover(2)
 
     Settings.returnButton.update(Settings.panelPosition.x, Settings.panelPosition.y + Settings.panelHeight * .5 - Settings.panelBorderSize - Settings.returnButton.height * .5, nil, nil, false, dt)
-    
-    if Settings.returnButton.state.isHover or Settings.conf[1].toggle.isHover then
+
+    if Settings.returnButton.state.isHover or Settings.conf[1].toggle.isHover or Settings.conf[2].toggle.isHover then
         love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
     else
         love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
@@ -142,9 +162,8 @@ function Settings.updateSettings()
         local label = Settings.conf[n].label
         label.position.x = Settings.panelPosition.x - Settings.panelWidth * .5 + Settings.panelBorderSize * 3
         label.position.y = Settings.panelPosition.y + (n - 2) * Settings.fonts[2]:getHeight() * 3
-        if n == 1 then
+        if n <= 2 then
             elementPos = Settings.conf[n].toggle.position
-            Settings.conf[n].toggle.isToggled = love.window.getFullscreen()
         else
             elementPos = Settings.conf[n].slider.position
         end
@@ -158,17 +177,17 @@ function Settings.displaySetting()
         local toggle
         local label = Settings.conf[n].label
         love.graphics.printf(label.text, Settings.fonts[2], label.position.x, label.position.y, Settings.fonts[2]:getWidth(label.text), "left", 0, 1, 1, 0, 0)
-        if n == 1 then
+        if n <= 2 then
             toggle = Settings.conf[n].toggle
             love.graphics.circle("fill", toggle.position.x, toggle.position.y, toggle.toggleSize)
-            if toggle.isToggled then
+            if Settings.conf[n].toggle.isToggled then
                 love.graphics.push("all")
                 love.graphics.setColor(Settings.borderColor)
                 love.graphics.circle("fill", toggle.position.x, toggle.position.y, toggle.toggleCheckedSize)
                 love.graphics.pop()
             end
 
-            if toggle.isHover then
+            if Settings.conf[n].toggle.isHover then
                 love.graphics.push("all")
                 love.graphics.setColor(0, 0, 0, .2)
                 love.graphics.circle("fill", toggle.position.x, toggle.position.y, toggle.toggleCheckedSize)
@@ -210,14 +229,14 @@ function Settings.drawPanel()
     love.graphics.rectangle("line", currentPos.x - Settings.panelWidth * .5, currentPos.y - Settings.panelHeight * .5, Settings.panelWidth, Settings.panelHeight, 10, 10)
 end
 
-function Settings.isFullScreenToggleHover()
+function Settings.isToggleHover(index)
     local mX, mY = love.mouse.getPosition()
-    local pX = Settings.conf[1].toggle.position.x
-    local pY = Settings.conf[1].toggle.position.y
-    local radius = Settings.conf[1].toggle.toggleSize
+    local pX = Settings.conf[index].toggle.position.x
+    local pY = Settings.conf[index].toggle.position.y
+    local radius = Settings.conf[index].toggle.toggleSize
     local dX = mX - pX
     local dY = mY - pY
-    Settings.conf[1].toggle.isHover = dX * dX + dY * dY <= radius * radius
+    Settings.conf[index].toggle.isHover = dX * dX + dY * dY <= radius * radius
 end
 
 function Settings.checkMousePressed()
@@ -231,11 +250,14 @@ function Settings.checkMouseRelease()
         end
     elseif Settings.conf[1].toggle.isHover then
         love.window.setFullscreen(not Settings.conf[1].toggle.isToggled)
+        Settings.conf[1].toggle.isToggled = not Settings.conf[1].toggle.isToggled
         Settings.panelWidth = love.graphics.getWidth() * .5
         Settings.panelHeight = love.graphics.getHeight() * .8
         Settings.panelPosition.x = love.graphics.getWidth() * .5
         Settings.panelPosition.y = love.graphics.getHeight() * .5
         love.mouse.setPosition(Settings.panelPosition.x, Settings.panelPosition.y)
+    elseif Settings.conf[2].toggle.isHover then
+        Settings.conf[2].toggle.isToggled = not Settings.conf[2].toggle.isToggled
     end
 end
 

@@ -15,6 +15,7 @@ function Game.new()
 end
 
 function Game.init()
+    love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
     NextLevel.init()
     Projectile.init()
     Game.projectiles = Projectile.projectilesTable
