@@ -84,6 +84,9 @@ function Projectile.create(index, x, y, angle) -- index helps to indicate if its
         end
     end
 
+    SoundManager.bubble[index]:stop()
+    SoundManager.bubble[index]:play()
+
     table.insert(Projectile.projectilesTable, p)
 end
 

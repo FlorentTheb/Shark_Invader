@@ -182,7 +182,6 @@ function Settings.updateSettings()
                 local relativeX = math.max(0, math.min(mX - (slider.position.x - slider.width * .5), slider.width))
                 slider.value = relativeX / slider.width
                 slider.value = roundTo(slider.value, 2)
-                print(slider.value)
             end
             elementPos = slider.position
         end

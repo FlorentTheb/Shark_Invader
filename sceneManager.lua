@@ -136,8 +136,12 @@ function SceneManager.updateNewScene(previousScene)
     elseif SceneManager.currentScene == "Game Over" then
         if Game.player.hp.current > 0 then
             GameOver.text = "Tu as gagne !"
+            SoundManager.victory:stop()
+            SoundManager.victory:play()
         else
             GameOver.text = "Tu as perdu !"
+            SoundManager.lose:stop()
+            SoundManager.lose:play()
         end
         Game.reset()
         GameOver.init()

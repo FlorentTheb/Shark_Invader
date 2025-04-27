@@ -1,14 +1,18 @@
 local SceneManager = require "sceneManager"
 local FontFactoryModule = require "factory/fonts"
+require "utils/soundManager"
 
 function love.load()
     math.randomseed(os.time())
+    SoundManager.new()
     love.graphics.setBackgroundColor({0.6, 0.8, 1})
     FontFactoryModule.init()
     SceneManager.new()
 end
 
 function love.update(dt)
+    SoundManager.update()
+    SoundManager.music:play()
     SceneManager.update(dt)
 end
 
