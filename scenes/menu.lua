@@ -55,6 +55,8 @@ function Menu.checkMouseRelease()
                 return "Play"
             elseif Menu.buttons[n].label.text == "Options" then
                 return "Settings"
+            elseif Menu.buttons[n].label.text == "Credits" then
+                return "Credits"
             elseif Menu.buttons[n].label.text == "Quitter" then
                 love.event.quit()
             end
