@@ -16,7 +16,7 @@ function Pause.new()
         buttonSpeed = 1200,
         deltaStartTimer = .3
     }
-    Pause.buttonLabels = {"Resume", "Options", "Menu"}
+    Pause.buttonLabels = {"Reprendre", "Options", "Menu"}
 end
 
 function Pause.init()
@@ -62,7 +62,7 @@ end
 function Pause.checkMouseRelease()
     for n = 1, #Pause.buttons do
         if Pause.buttons[n].isClicked() then
-            if Pause.buttons[n].label.text == "Resume" then
+            if Pause.buttons[n].label.text == "Reprendre" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
                 return "Game"
             elseif Pause.buttons[n].label.text == "Options" then

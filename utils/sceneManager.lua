@@ -121,7 +121,6 @@ function SceneManager.handleMouseReleased(_, _, button)
 end
 
 function SceneManager.updateNewScene(previousScene)
-    print(previousScene .. " => " .. SceneManager.currentScene)
     if SceneManager.currentScene == "Play" and Settings.conf[2].toggle.isToggled then
         SceneManager.currentScene = "Game"
     elseif SceneManager.currentScene == "Play" then
