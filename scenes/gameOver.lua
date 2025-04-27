@@ -18,25 +18,24 @@ function GameOver.new()
         buttonSpeed = 900,
         deltaStartTimer = .3
     }
-    GameOver.buttonLabels = {"Restart", "Menu"}
+    GameOver.buttonLabels = {"Restart", "Options", "Menu"}
 end
 
 function GameOver.init()
     GameOver.currentTime = 0
-    GameOver.buttons = buttonFactory.createButtonList(GameOver.buttonLabels, GameOver.fonts.medium, true)
+    GameOver.buttons = buttonFactory.createButtonList(GameOver.buttonLabels, GameOver.fonts.medium)
     love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
 end
 
-function GameOver.update(dt)
+function GameOver.update(isSettingsPanelOpen, dt)
     GameOver.currentTime = GameOver.currentTime + dt
     local isButtonHover = false
     for n = 1, #GameOver.buttons do
-        local hasToStart = false
-        if GameOver.currentTime > (n - 1) * GameOver.animation.deltaStartTimer then
-            hasToStart = true
+        if GameOver.currentTime > (n - 1) * GameOver.animation.deltaStartTimer and GameOver.buttons[n].state.isAtStart then
+            GameOver.buttons[n].state.isMoving = true
         end
-        GameOver.buttons[n].update(hasToStart, GameOver.animation.buttonSpeed, dt, true, n, #GameOver.buttons)
-
+        GameOver.buttons[n].update(nil, love.graphics.getHeight() * .7, n, #GameOver.buttons, isSettingsPanelOpen, dt)
+        
         isButtonHover = isButtonHover or GameOver.buttons[n].state.isHover
         if isButtonHover then
             love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
@@ -76,6 +75,8 @@ function GameOver.checkMouseRelease()
             if GameOver.buttons[n].label.text == "Restart" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
                 return "Game"
+            elseif GameOver.buttons[n].label.text == "Options" then
+                return "Settings"
             elseif GameOver.buttons[n].label.text == "Menu" then
                 return "Menu"
             end

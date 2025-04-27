@@ -21,19 +21,18 @@ end
 
 function Pause.init()
     Pause.currentTime = 0
-    Pause.buttons = buttonFactory.createButtonList(Pause.buttonLabels, Pause.fonts.medium, true)
+    Pause.buttons = buttonFactory.createButtonList(Pause.buttonLabels, Pause.fonts.medium)
     love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
 end
 
-function Pause.update(dt)
+function Pause.update(isSettingsPanelOpen, dt)
     Pause.currentTime = Pause.currentTime + dt
     local isButtonHover = false
     for n = 1, #Pause.buttons do
-        local hasToStart = false
-        if Pause.currentTime > (n - 1) * Pause.animation.deltaStartTimer then
-            hasToStart = true
+        if Pause.currentTime > (n - 1) * Pause.animation.deltaStartTimer and Pause.buttons[n].state.isAtStart then
+            Pause.buttons[n].state.isMoving = true
         end
-        Pause.buttons[n].update(hasToStart, Pause.animation.buttonSpeed, dt, true, n, #Pause.buttons)
+        Pause.buttons[n].update(nil, love.graphics.getHeight() * .7, n, #Pause.buttons, isSettingsPanelOpen, dt)
 
         isButtonHover = isButtonHover or Pause.buttons[n].state.isHover
         if isButtonHover then

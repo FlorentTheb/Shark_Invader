@@ -13,19 +13,19 @@ end
 
 function Menu.init()
     Menu.currentTime = 0
-    Menu.buttons = ButtonFactoryModule.createButtonList(Menu.buttonLabels, Menu.font, false)
+    Menu.buttons = ButtonFactoryModule.createButtonList(Menu.buttonLabels, Menu.font)
     love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
 end
 
-function Menu.update(dt)
+function Menu.update(isSettingsPanelOpen, dt)
     Menu.currentTime = Menu.currentTime + dt
     local isButtonHover = false
     for n = 1, #Menu.buttons do
-        local hasToStart = false
-        if Menu.currentTime > (n - 1) * Menu.animation.deltaStartTimer then
-            hasToStart = true
+        if Menu.currentTime > (n - 1) * Menu.animation.deltaStartTimer and Menu.buttons[n].state.isAtStart then
+            Menu.buttons[n].state.isMoving = true
         end
-        Menu.buttons[n].update(hasToStart, Menu.animation.buttonSpeed, dt, false, n, #Menu.buttons)
+
+        Menu.buttons[n].update(love.graphics.getWidth() * .5, nil, n, #Menu.buttons, isSettingsPanelOpen, dt)
 
         isButtonHover = isButtonHover or Menu.buttons[n].state.isHover
         if isButtonHover then

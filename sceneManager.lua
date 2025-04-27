@@ -28,13 +28,13 @@ end
 function SceneManager.update(dt)
     local previousScene = SceneManager.currentScene
     if SceneManager.currentScene == "Menu" then
-        Menu.update(dt)
+        Menu.update(Settings.isVisible, dt)
     elseif SceneManager.currentScene == "Game" then
         SceneManager.currentScene = Game.update(dt)
     elseif SceneManager.currentScene == "Game Over" then
-        GameOver.update(dt)
+        GameOver.update(Settings.isVisible, dt)
     elseif SceneManager.currentScene == "Pause" then
-        Pause.update(dt)
+        Pause.update(Settings.isVisible, dt)
     elseif SceneManager.currentScene == "Tutorial" then
         SceneManager.currentScene = Tutorial.update(dt)
     end
@@ -44,6 +44,9 @@ function SceneManager.update(dt)
 
     if previousScene ~= SceneManager.currentScene then
         SceneManager.updateNewScene(previousScene)
+        if SceneManager.currentScene == "Game Over" then
+            GameOver.update(Settings.isVisible, dt)
+        end
     end
 end
 

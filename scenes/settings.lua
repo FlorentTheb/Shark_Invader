@@ -75,7 +75,7 @@ function Settings.new()
             }
         }
     }
-    Settings.returnButton = ButtonFactoryModule.createSingleButton("Retour", Settings.fonts[2], 0, 0, .3)
+    Settings.returnButton = ButtonFactoryModule.createSingleButton(Settings.fonts[2], "Retour")
 end
 
 function Settings.init()
@@ -87,16 +87,13 @@ function Settings.init()
     Settings.isPanelFadingIn = true
     Settings.isPanelFadingOut = false
 
+    Settings.returnButton.update(Settings.panelPosition.x, Settings.panelPosition.y + Settings.panelHeight * .5 - Settings.panelBorderSize - Settings.returnButton.height * .5, nil, nil, dt)
+    Settings.returnButton.state.isAtStart = false
     love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
 end
 
 function Settings.update(dt)
     Settings.movePanel(dt)
-    Settings.returnButton.position.current = {
-        x = Settings.panelPosition.x,
-        y = Settings.panelPosition.y + Settings.panelHeight * .5 - Settings.panelBorderSize - Settings.returnButton.height * .5
-    }
-    Settings.returnButton.position.finale = Settings.returnButton.position.current
 
     Settings.title.position = {
         x = Settings.panelPosition.x,
@@ -105,9 +102,9 @@ function Settings.update(dt)
 
     Settings.updateSettings()
     Settings.isFullScreenToggleHover()
-    --print(Settings.conf[1].toggle.isHover)
 
-    Settings.returnButton.update(false, nil, dt)
+    Settings.returnButton.update(Settings.panelPosition.x, Settings.panelPosition.y + Settings.panelHeight * .5 - Settings.panelBorderSize - Settings.returnButton.height * .5, nil, nil, false, dt)
+    
     if Settings.returnButton.state.isHover or Settings.conf[1].toggle.isHover then
         love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
     else

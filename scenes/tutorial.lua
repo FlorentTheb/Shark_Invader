@@ -40,7 +40,7 @@ function Tutorial.new(player)
             isStepOK = false
         }
     }
-    Tutorial.skipButton = ButtonFactoryModule.createSingleButton("Skip", Tutorial.fonts.small, 60, 50, .3)
+    Tutorial.skipButton = ButtonFactoryModule.createSingleButton(Tutorial.fonts.small, "Skip")
     Tutorial.player = player
 end
 
@@ -58,6 +58,7 @@ function Tutorial.init()
     end
     NextLevel.isVisible = false
     love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
+    Tutorial.skipButton.state.isAtStart = false
 end
 
 function Tutorial.updateStep()
@@ -98,7 +99,7 @@ function Tutorial.update(dt)
     Tutorial.updateStep()
     Tutorial.player:update(dt)
 
-    Tutorial.skipButton.update(false, nil, dt)
+    Tutorial.skipButton.update(60, 50, nil, nil, false, dt)
     if Tutorial.skipButton.state.isHover then
         love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
     else
