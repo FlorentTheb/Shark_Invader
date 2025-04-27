@@ -3,6 +3,7 @@ local GameOver = require "scenes/gameOver"
 local Pause = require "scenes/pause"
 local Tutorial = require "scenes/tutorial"
 local Game = require "scenes/game"
+local Credits = require "scenes/credits"
 local Settings = require "scenes/settings"
 local NextLevel = require "utils/nextLevel"
 
@@ -16,6 +17,7 @@ function SceneManager:new()
     GameOver.new()
     Pause.new()
     Settings.new()
+    Credits.new()
     SceneManager.init()
 end
 
@@ -37,6 +39,8 @@ function SceneManager.update(dt)
         Pause.update(Settings.isVisible, dt)
     elseif SceneManager.currentScene == "Tutorial" then
         SceneManager.currentScene = Tutorial.update(dt)
+    elseif SceneManager.currentScene == "Credits" then
+        Credits.update(dt)
     end
     if Settings.isVisible then
         Settings.update(dt)
@@ -61,6 +65,8 @@ function SceneManager.draw(dt)
         Pause.draw(dt)
     elseif SceneManager.currentScene == "Tutorial" then
         Tutorial.draw()
+    elseif SceneManager.currentScene == "Credits" then
+        Credits.draw()
     end
 
     if Settings.isVisible then
@@ -77,6 +83,8 @@ function SceneManager.handleMousePressed(_, _, button)
         Pause.checkMousePressed()
     elseif SceneManager.currentScene == "Tutorial" and button == 1 then
         Tutorial.checkMousePressed()
+    elseif SceneManager.currentScene == "Credits" and button == 1 then
+        Credits.checkMousePressed()
     end
 
     if Settings.isVisible then
@@ -94,6 +102,8 @@ function SceneManager.handleMouseReleased(_, _, button)
         SceneManager.currentScene = Pause.checkMouseRelease()
     elseif SceneManager.currentScene == "Tutorial" and button == 1 then
         SceneManager.currentScene = Tutorial.checkMouseRelease()
+    elseif SceneManager.currentScene == "Credits" and button == 1 then
+        SceneManager.currentScene = Credits.checkMouseRelease()
     end
 
     if SceneManager.currentScene == "Settings" then
@@ -135,6 +145,8 @@ function SceneManager.updateNewScene(previousScene)
         Pause.init()
     elseif SceneManager.currentScene == "Tutorial" then
         Tutorial.init()
+    elseif SceneManager.currentScene == "Credits" then
+        Credits.init()
     elseif SceneManager.currentScene == "Game" then
         if previousScene ~= "Pause" then
             Game.init()
