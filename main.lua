@@ -1,4 +1,4 @@
-local SceneManager = require "sceneManager"
+local SceneManager = require "utils/sceneManager"
 local FontFactoryModule = require "factory/fonts"
 require "utils/soundManager"
 

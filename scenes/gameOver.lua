@@ -15,7 +15,7 @@ function GameOver.new()
         height = GameOver.fonts.giant:getHeight()
     }
     GameOver.animation = {
-        buttonSpeed = 900,
+        buttonSpeed = 1200,
         deltaStartTimer = .3
     }
     GameOver.buttonLabels = {"Restart", "Options", "Menu"}

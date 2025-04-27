@@ -13,7 +13,7 @@ function Pause.new()
         height = Pause.fonts.giant:getHeight()
     }
     Pause.animation = {
-        buttonSpeed = 900,
+        buttonSpeed = 1200,
         deltaStartTimer = .3
     }
     Pause.buttonLabels = {"Resume", "Options", "Menu"}

@@ -4,7 +4,7 @@ local FontFactoryModule = require "factory/fonts"
 
 function Menu.new()
     Menu.animation = {
-        buttonSpeed = 900,
+        buttonSpeed = 1200,
         deltaStartTimer = .3
     }
     Menu.buttonLabels = {"Jouer", "Options", "Credits", "Quitter"}
