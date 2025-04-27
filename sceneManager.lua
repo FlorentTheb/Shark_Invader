@@ -112,7 +112,12 @@ end
 
 function SceneManager.updateNewScene(previousScene)
     print(previousScene .. " => " .. SceneManager.currentScene)
-
+    if SceneManager.currentScene == "Play" and Settings.conf[2].toggle.isToggled then
+        SceneManager.currentScene = "Game"
+    elseif SceneManager.currentScene == "Play" then
+        SceneManager.currentScene = "Tutorial"
+    end
+    
     if SceneManager.currentScene == "Menu" then
         Menu.init()
         if previousScene == "Pause" then

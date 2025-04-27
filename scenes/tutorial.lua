@@ -32,15 +32,15 @@ function Tutorial.new(player)
             isStepOK = false
         },
         {
-            text = "Tire en maintenant clic gauche de la souris",
+            text = "Tire en maintenant\nclic gauche de la souris",
             isStepOK = false
         },
         {
-            text = "Bonne chance !",
+            text = "Franchis tous les niveaux.\nElimine les ennemis.\nBonne chance !",
             isStepOK = false
         }
     }
-    Tutorial.skipButton = ButtonFactoryModule.createSingleButton(Tutorial.fonts.small, "Skip")
+    Tutorial.skipButton = ButtonFactoryModule.createSingleButton(Tutorial.fonts.small, "Passer")
     Tutorial.player = player
 end
 
@@ -99,7 +99,7 @@ function Tutorial.update(dt)
     Tutorial.updateStep()
     Tutorial.player:update(dt)
 
-    Tutorial.skipButton.update(60, 50, nil, nil, false, dt)
+    Tutorial.skipButton.update(Tutorial.skipButton.width * .5 + Tutorial.skipButton.height * .5, Tutorial.skipButton.height, nil, nil, false, dt)
     if Tutorial.skipButton.state.isHover then
         love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
     else
@@ -160,10 +160,10 @@ function Tutorial.draw()
 
     local currentText = Tutorial.steps[Tutorial.stepIndex].text
     local posX = love.graphics.getWidth() * .5
-    local posY = 2 * Tutorial.fonts.medium:getHeight()
+    local posY = Tutorial.fonts.medium:getHeight()
     local oX = Tutorial.fonts.medium:getWidth(currentText) * .5
     local oY = Tutorial.fonts.medium:getHeight() * .5
-    love.graphics.printf(currentText, Tutorial.fonts.medium, posX, posY, Tutorial.fonts.medium:getWidth(currentText), "left", 0, 1, 1, oX, oY)
+    love.graphics.printf(currentText, Tutorial.fonts.medium, posX, posY, Tutorial.fonts.medium:getWidth(currentText), "center", 0, 1, 1, oX, oY)
     love.graphics.pop()
     if Tutorial.isOver then
         NextLevel.drawFading("end")
@@ -176,7 +176,7 @@ end
 
 function Tutorial.checkMouseRelease()
     if Tutorial.skipButton.isClicked() then
-        if Tutorial.skipButton.label.text == "Skip" then
+        if Tutorial.skipButton.label.text == "Passer" then
             love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
             Tutorial.isOver = true
         end

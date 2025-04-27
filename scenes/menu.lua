@@ -52,7 +52,7 @@ function Menu.checkMouseRelease()
     for n = 1, #Menu.buttons do
         if Menu.buttons[n].isClicked() then
             if Menu.buttons[n].label.text == "Jouer" then
-                return "Tutorial"
+                return "Play"
             elseif Menu.buttons[n].label.text == "Options" then
                 return "Settings"
             elseif Menu.buttons[n].label.text == "Quitter" then
