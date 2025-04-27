@@ -66,6 +66,8 @@ function Pause.checkMouseRelease()
             if Pause.buttons[n].label.text == "Resume" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
                 return "Game"
+            elseif Pause.buttons[n].label.text == "Options" then
+                return "Settings"
             elseif Pause.buttons[n].label.text == "Menu" then
                 return "Menu"
             end

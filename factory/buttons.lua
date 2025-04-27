@@ -8,7 +8,6 @@
         > All buttons of the list will have the same size, which is set according to the longest label
     - These methods yet need the specific font initially
 ]]
-    
 local ButtonFactoryModule = {}
 
 local function createLabel(font, text)
@@ -34,7 +33,7 @@ local function getMaxWidthLabels(listButtonsLabel, font)
     return maxWidth
 end
 
-local function createButton(indexButton, totalButtons, currentLabel, font, isHorizontalDisplayed, labelWidth, posX, posY, alpha)
+local function createButton(indexButton, totalButtons, currentLabel, font, isHorizontalDisplayed, labelWidth, posX, posY)
     local button = {}
     button.padding = 20
     button.margin = 20
@@ -44,8 +43,7 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
         button.width = font:getWidth(currentLabel) + 2 * button.padding
     end
     local alphaShadow
-    if not alpha then
-        alpha = 1
+    if indexButton then
         alphaShadow = .3
     else
         alphaShadow = 0
@@ -56,7 +54,7 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
         offset = 5,
         color = {0, 0, 0, alphaShadow}
     }
-    button.color = {0, .5, .5, alpha}
+    button.color = {0, .5, .5, 1}
     button.position = {}
     if posX and posY then
         button.position.finale = {
@@ -142,20 +140,21 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
     function button.update(hasToMove, animationSpeed, dt)
         local current = button.position.current
         local finale = button.position.finale
-
-        if (current.x < finale.x or current.y > finale.y) and hasToMove then -- Vector set in the creation -> set the direction of the button
-            current.x = current.x + animationSpeed * button.vector.x * dt
-            current.y = current.y + animationSpeed * button.vector.y * dt
-        elseif current.x > finale.x or current.y < finale.y then
-            current.x = finale.x
-            current.y = finale.y
+        if hasToMove then
+            if (current.x < finale.x or current.y > finale.y) then -- Vector set in the creation -> set the direction of the button
+                current.x = current.x + animationSpeed * button.vector.x * dt
+                current.y = current.y + animationSpeed * button.vector.y * dt
+            elseif current.x > finale.x or current.y < finale.y then
+                current.x = finale.x
+                current.y = finale.y
+            end
         end
 
         if button.isMouseIn() then -- Hover with mouse
-            button.color = {0, .7, .7, alpha}
+            button.color = {0, .7, .7, 1}
             button.state.isHover = true
         else
-            button.color = {0, .5, .5, alpha}
+            button.color = {0, .5, .5, 1}
             button.state.isHover = false
         end
     end
@@ -163,7 +162,6 @@ local function createButton(indexButton, totalButtons, currentLabel, font, isHor
     function button.draw()
         local buttonTopLeftX = button.position.current.x - button.width * .5
         local buttonTopLeftY = button.position.current.y - button.height * .5
-
         love.graphics.push("all")
 
         -- Shadow of button
@@ -196,8 +194,8 @@ function ButtonFactoryModule.createButtonList(listButtonsLabel, font, isHorizont
     return listButton
 end
 
-function ButtonFactoryModule.createSingleButton(label, font, posX, posY, alpha)
-    return createButton(nil, nil, label, font, nil, nil, posX, posY, alpha)
+function ButtonFactoryModule.createSingleButton(label, font, posX, posY)
+    return createButton(nil, nil, label, font, nil, nil, posX, posY)
 end
 
 return ButtonFactoryModule

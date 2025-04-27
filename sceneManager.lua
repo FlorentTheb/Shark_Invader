@@ -3,6 +3,7 @@ local GameOver = require "scenes/gameOver"
 local Pause = require "scenes/pause"
 local Tutorial = require "scenes/tutorial"
 local Game = require "scenes/game"
+local Settings = require "scenes/settings"
 local NextLevel = require "utils/nextLevel"
 
 local SceneManager = {}
@@ -14,11 +15,13 @@ function SceneManager:new()
     NextLevel.new()
     GameOver.new()
     Pause.new()
+    Settings.new()
     SceneManager.init()
 end
 
 function SceneManager.init()
     SceneManager.currentScene = "Menu"
+    Settings.init()
     Menu.init()
 end
 
@@ -34,6 +37,9 @@ function SceneManager.update(dt)
         Pause.update(dt)
     elseif SceneManager.currentScene == "Tutorial" then
         SceneManager.currentScene = Tutorial.update(dt)
+    end
+    if Settings.isVisible then
+        Settings.update(dt)
     end
 
     if previousScene ~= SceneManager.currentScene then
@@ -53,6 +59,10 @@ function SceneManager.draw(dt)
     elseif SceneManager.currentScene == "Tutorial" then
         Tutorial.draw()
     end
+
+    if Settings.isVisible then
+        Settings.draw()
+    end
 end
 
 function SceneManager.handleMousePressed(_, _, button)
@@ -65,11 +75,15 @@ function SceneManager.handleMousePressed(_, _, button)
     elseif SceneManager.currentScene == "Tutorial" and button == 1 then
         Tutorial.checkMousePressed()
     end
+
+    if Settings.isVisible then
+        Settings.checkMousePressed()
+    end
 end
 
 function SceneManager.handleMouseReleased(_, _, button)
     local previousScene = SceneManager.currentScene
-    if SceneManager.currentScene == "Menu" and button == 1 then
+    if SceneManager.currentScene == "Menu" and button == 1 and not Settings.isVisible then
         SceneManager.currentScene = Menu.checkMouseRelease()
     elseif SceneManager.currentScene == "Game Over" and button == 1 then
         SceneManager.currentScene = GameOver.checkMouseRelease()
@@ -77,6 +91,15 @@ function SceneManager.handleMouseReleased(_, _, button)
         SceneManager.currentScene = Pause.checkMouseRelease()
     elseif SceneManager.currentScene == "Tutorial" and button == 1 then
         SceneManager.currentScene = Tutorial.checkMouseRelease()
+    end
+
+    if SceneManager.currentScene == "Settings" then
+        Settings.isVisible = true
+        SceneManager.currentScene = previousScene
+    end
+
+    if Settings.isVisible then
+        Settings.checkMouseRelease()
     end
 
     if previousScene ~= SceneManager.currentScene then

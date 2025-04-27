@@ -7,7 +7,7 @@ function Menu.new()
         buttonSpeed = 900,
         deltaStartTimer = .3
     }
-    Menu.buttonLabels = {"Play", "Options", "Credits", "Exit"}
+    Menu.buttonLabels = {"Jouer", "Options", "Credits", "Quitter"}
     Menu.font = FontFactoryModule.getFont(1, "big")
 end
 
@@ -51,9 +51,11 @@ end
 function Menu.checkMouseRelease()
     for n = 1, #Menu.buttons do
         if Menu.buttons[n].isClicked() then
-            if Menu.buttons[n].label.text == "Play" then
+            if Menu.buttons[n].label.text == "Jouer" then
                 return "Tutorial"
-            elseif Menu.buttons[n].label.text == "Exit" then
+            elseif Menu.buttons[n].label.text == "Options" then
+                return "Settings"
+            elseif Menu.buttons[n].label.text == "Quitter" then
                 love.event.quit()
             end
         end
