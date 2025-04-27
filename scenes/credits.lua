@@ -49,12 +49,12 @@ end
 function Credits.draw()
     love.graphics.push("all")
     love.graphics.setColor({0, 0.32, 0.8, 0.6})
-    love.graphics.printf(Credits.title, Credits.fonts.giant, love.graphics.getWidth() * .5, Credits.fonts.giant:getHeight(), Credits.size.width, "left", 0, 1, 1, Credits.size.width * .5, Credits.size.height * .5)
+    love.graphics.printf(Credits.title, Credits.fonts.giant, love.graphics.getWidth() * .5, Credits.fonts.giant:getHeight() * .5, Credits.size.width, "left", 0, 1, 1, Credits.size.width * .5, Credits.size.height * .5)
     love.graphics.setColor(1, 1, 1, 1)
     for n = 1, #Credits.texts do
         local text = Credits.texts[n]
-        local delta = (n % 2 == 0) and 1 or -1
-        love.graphics.printf(text, Credits.fonts.medium, love.graphics.getWidth() * .5, love.graphics.getHeight() * .5 + delta * Credits.fonts.medium:getHeight(), Credits.fonts.medium:getWidth(text), "left", 0, 1, 1, Credits.size.width * .5, 0)
+        local delta = n - 1
+        love.graphics.printf(text, Credits.fonts.medium, love.graphics.getWidth() * .5, love.graphics.getHeight() * .5 + delta * Credits.fonts.medium:getHeight(), Credits.fonts.medium:getWidth(text), "center", 0, 1, 1, Credits.fonts.medium:getWidth(text) * .5, Credits.fonts.medium:getHeight() * .5)
     end
     love.graphics.pop()
     for n = 1, #Credits.buttons do
