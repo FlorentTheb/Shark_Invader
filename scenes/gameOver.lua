@@ -9,7 +9,7 @@ function GameOver.new()
         medium = FontFactoryModule.getFont(1, "medium")
     }
     GameOver.title = "Game Over"
-    GameOver.text = "You lose !"
+    GameOver.text = "Tu as perdu !"
     GameOver.titleSize = {
         width = GameOver.fonts.giant:getWidth(GameOver.title),
         height = GameOver.fonts.giant:getHeight()

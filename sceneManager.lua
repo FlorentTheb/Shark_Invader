@@ -117,7 +117,7 @@ function SceneManager.updateNewScene(previousScene)
     elseif SceneManager.currentScene == "Play" then
         SceneManager.currentScene = "Tutorial"
     end
-    
+
     if SceneManager.currentScene == "Menu" then
         Menu.init()
         if previousScene == "Pause" then
@@ -125,9 +125,9 @@ function SceneManager.updateNewScene(previousScene)
         end
     elseif SceneManager.currentScene == "Game Over" then
         if Game.player.hp.current > 0 then
-            GameOver.text = "You win !"
+            GameOver.text = "Tu as gagne !"
         else
-            GameOver.text = "You lose !"
+            GameOver.text = "Tu as perdu !"
         end
         Game.reset()
         GameOver.init()
