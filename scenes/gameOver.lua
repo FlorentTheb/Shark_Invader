@@ -15,10 +15,10 @@ function GameOver.new()
         height = GameOver.fonts.giant:getHeight()
     }
     GameOver.animation = {
-        buttonSpeed = 900,
+        buttonSpeed = 1200,
         deltaStartTimer = .3
     }
-    GameOver.buttonLabels = {"Restart", "Options", "Menu"}
+    GameOver.buttonLabels = {"Rejouer", "Options", "Menu"}
 end
 
 function GameOver.init()
@@ -72,7 +72,7 @@ end
 function GameOver.checkMouseRelease()
     for n = 1, #GameOver.buttons do
         if GameOver.buttons[n].isClicked() then
-            if GameOver.buttons[n].label.text == "Restart" then
+            if GameOver.buttons[n].label.text == "Rejouer" then
                 love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
                 return "Game"
             elseif GameOver.buttons[n].label.text == "Options" then

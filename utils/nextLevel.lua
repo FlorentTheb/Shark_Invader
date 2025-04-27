@@ -85,7 +85,7 @@ end
 function NextLevel.updateFading(roundState, dt)
     if roundState == "end" then
         if NextLevel.blackScreenAlphaOut < 1 then
-            NextLevel.blackScreenAlphaOut = NextLevel.blackScreenAlphaOut + dt * .5
+            NextLevel.blackScreenAlphaOut = NextLevel.blackScreenAlphaOut + dt
         end
 
         if NextLevel.blackScreenAlphaOut >= 1 then
@@ -96,7 +96,7 @@ function NextLevel.updateFading(roundState, dt)
         end
     elseif roundState == "start" then
         if NextLevel.blackScreenAlphaIn > 0 then
-            NextLevel.blackScreenAlphaIn = NextLevel.blackScreenAlphaIn - dt * .5
+            NextLevel.blackScreenAlphaIn = NextLevel.blackScreenAlphaIn - dt
         end
 
         if NextLevel.blackScreenAlphaIn <= 0 then

@@ -13,7 +13,7 @@ function Settings.new()
     Settings.panelWidth = love.graphics.getWidth() * .6
     Settings.panelHeight = love.graphics.getHeight() * .8
     Settings.panelBorderSize = Settings.panelWidth * .05
-    Settings.panelAnimationSpeed = 900
+    Settings.panelAnimationSpeed = 1200
     Settings.borderColor = {0, .5, .5, 1}
     Settings.panelColor = {0.6, 0.8, 1, .95}
     Settings.conf = {
